@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "art/saiyan/web/prompts.html"
+        ],
+        "createdAt": "2026-11-20T04:19:42.714Z",
+        "reason": "Claude: false positive, detector reads #ffffff/#000 because it does not resolve the CSS custom properties; real pairs are #E8E6E3/#B5AFA8/#E08A6D/#F5A623 on #0E0E0E/#191716, all above 4.5:1"
+      }
+    ]
+  }
+}
