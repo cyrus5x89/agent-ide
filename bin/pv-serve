@@ -1,0 +1,232 @@
+#!/usr/bin/env python3
+# pv-serve: máy chủ nhỏ cho khung preview của pv (chỉ 127.0.0.1, đường dẫn có token)
+#   /<token>/browse/<path>  thư mục: duyệt như file explorer (thư mục trước, breadcrumb)
+#   /<token>/view/<path>    file: ảnh/video/nhạc phát luôn, Markdown render, code tô màu, UTF-8 đúng
+#   /<token>/raw/<path>     file gốc, có Range để tua video
+#   pv-serve --url <path>   (pv gọi) bật máy chủ nếu cần, in URL
+# pv tự bật; không ai gọi trong 8 tiếng thì tự tắt. Trạng thái ở ~/.cache/pv/server.json
+import html, json, mimetypes, os, pathlib, secrets, socket, sys, threading, time, urllib.parse
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+STATE = pathlib.Path.home() / ".cache/pv/server.json"
+IDLE = 8 * 3600
+VIDEO = {".mp4", ".mov", ".m4v", ".webm"}
+AUDIO = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"}
+IMAGE = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".heic", ".avif", ".bmp"}
+DIRECT = {".pdf", ".html", ".htm"}
+HIDE = {".git", "node_modules", "__pycache__", ".venv", ".DS_Store"}
+CDN = "https://cdn.jsdelivr.net/npm"
+STYLE = """
+:root{--bg:#0E0E0E;--panel:#171615;--line:#2A2624;--ink:#E8E6E3;--muted:#A39C95;--accent:#E08A6D;--dir:#E5B567;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,system-ui,sans-serif}
+header{position:sticky;top:0;z-index:2;background:var(--panel);border-bottom:1px solid var(--line);padding:8px 12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font:12px ui-monospace,Menlo,monospace}
+header a{color:var(--muted);text-decoration:none}header a:hover{color:var(--ink)}header b{color:var(--accent);font-weight:600}
+header .sep{color:var(--line)}
+ul.ls{list-style:none;margin:0;padding:4px 0}.ls li a{display:grid;grid-template-columns:20px 1fr auto auto;gap:10px;align-items:center;padding:4px 12px;color:var(--ink);text-decoration:none}
+
+.ls li a:hover,.ls li a:focus-visible{background:#221F1D;outline:none}
+.ls .ic{text-align:center;color:var(--muted)}.ls li.d .ic,.ls li.d .nm{color:var(--dir)}
+
+.ls .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ls .sz,.ls .tm{color:var(--muted);font:11px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.media{display:grid;place-items:center;min-height:calc(100vh - 40px);padding:12px}.media img,.media video{max-width:100%;max-height:calc(100vh - 64px);object-fit:contain}.media audio{width:90%}
+.doc{max-width:860px;margin:0 auto;padding:16px 20px 48px;font-size:14px;line-height:1.65}
+.doc h1,.doc h2,.doc h3{line-height:1.25;margin:1.4em 0 .5em}.doc h1{font-size:24px}.doc h2{font-size:19px;border-bottom:1px solid var(--line);padding-bottom:4px}.doc h3{font-size:16px}
+.doc a{color:var(--accent)}.doc code{font:12.5px ui-monospace,Menlo,monospace;background:#1E1C1A;padding:1px 5px;border-radius:4px}
+.doc pre code{display:block;padding:12px;overflow-x:auto;background:var(--panel);border-radius:8px}
+.doc table{border-collapse:collapse;display:block;overflow-x:auto}.doc th,.doc td{border:1px solid var(--line);padding:4px 8px}
+.doc img{max-width:100%}.doc ul,.doc ol{padding-left:1.4em}.doc blockquote{margin:0;padding:0 12px;border-left:3px solid var(--line);color:var(--muted)}
+pre.code{margin:0;padding:12px 16px;overflow-x:auto;font:12.5px/1.55 ui-monospace,Menlo,monospace;tab-size:4}
+.empty{padding:24px;color:var(--muted)}
+.hljs{background:transparent!important}
+"""
+HLJS = (f'<link rel="stylesheet" href="{CDN}/@highlightjs/cdn-assets@11.9.0/styles/github-dark.min.css">'
+        f'<script src="{CDN}/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>')
+
+
+def human(n):
+    for unit in ("B", "KB", "MB", "GB"):
+        if n < 1024:
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024
+    return f"{n:.1f} TB"
+
+
+class Handler(BaseHTTPRequestHandler):
+    token = ""
+    last = time.time()
+
+    def log_message(self, *a):
+        pass
+
+    def url(self, kind, path):
+        return f"/{self.token}/{kind}" + urllib.parse.quote(str(path))
+
+    def crumbs(self, path, is_dir):
+        parts = pathlib.Path(path).parts
+        out = []
+        for i, part in enumerate(parts):
+            sub = pathlib.Path(*parts[:i + 1])
+            label = html.escape(part if part != "/" else "/")
+            last = i == len(parts) - 1
+            out.append(f"<b>{label}</b>" if last and not is_dir else f'<a href="{self.url("browse", sub)}">{label}</a>')
+        return '<span class="sep">›</span>'.join(out[1:] if len(out) > 1 else out)
+
+    def page(self, title, header, body, extra=""):
+        doc = (f"<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width'><title>{html.escape(title)}</title>"
+               f"<style>{STYLE}</style>{extra}<header>{header}</header>{body}")
+        self.send(200, doc.encode(), "text/html; charset=utf-8")
+
+    def send(self, code, data, ctype, headers=()):
+        self.send_response(code)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        for k, v in headers:
+            self.send_header(k, v)
+        self.end_headers()
+        if self.command != "HEAD":
+            self.wfile.write(data)
+
+    def do_HEAD(self):
+        self.do_GET()
+
+    def do_GET(self):
+        Handler.last = time.time()
+        _, token, kind, *rest = (self.path.split("?")[0].split("/", 3) + ["", ""])[:4]
+        if token != self.token or kind not in ("browse", "view", "raw"):
+            return self.send(404, b"not found", "text/plain")
+        path = pathlib.Path("/" + urllib.parse.unquote(rest[0] if rest else ""))
+        if not path.exists():
+            return self.send(404, f"không thấy {path}".encode(), "text/plain; charset=utf-8")
+        if kind == "browse" or path.is_dir():
+            return self.browse(path if path.is_dir() else path.parent)
+        if kind == "raw":
+            return self.raw(path)
+        return self.view(path)
+
+    def browse(self, d):
+        rows = []
+        try:
+            items = sorted((p for p in d.iterdir() if p.name not in HIDE and not p.name.startswith(".")),
+                           key=lambda p: (not p.is_dir(), p.name.lower()))
+        except PermissionError:
+            items = []
+        if d.parent != d:
+            rows.append(f'<li class="d"><a href="{self.url("browse", d.parent)}"><span class="ic">↰</span><span class="nm">..</span><span></span><span></span></a></li>')
+        for p in items[:1500]:
+            try:
+                st = p.stat()
+            except OSError:
+                continue
+            isd = p.is_dir()
+            ext = p.suffix.lower()
+            ic = "▸" if isd else "▶" if ext in VIDEO else "♪" if ext in AUDIO else "◩" if ext in IMAGE else "·"
+            tm = time.strftime("%d/%m %H:%M", time.localtime(st.st_mtime))
+            rows.append(f'<li class="{"d" if isd else "f"}"><a href="{self.url("browse" if isd else "view", p)}">'
+                        f'<span class="ic">{ic}</span><span class="nm">{html.escape(p.name)}</span>'
+                        f'<span class="sz">{"" if isd else human(st.st_size)}</span><span class="tm">{tm}</span></a></li>')
+        body = f"<ul class=ls>{''.join(rows)}</ul>" if rows else '<p class="empty">Thư mục trống</p>'
+        self.page(d.name or "/", self.crumbs(d, True), body)
+
+    def view(self, p):
+        ext, raw = p.suffix.lower(), self.url("raw", p)
+        head = self.crumbs(p, False)
+        if ext in VIDEO:
+            return self.page(p.name, head, f'<div class="media"><video src="{raw}" controls autoplay playsinline></video></div>')
+        if ext in AUDIO:
+            return self.page(p.name, head, f'<div class="media"><audio src="{raw}" controls autoplay></audio></div>')
+        if ext in IMAGE:
+            return self.page(p.name, head, f'<div class="media"><img src="{raw}" alt=""></div>')
+        if ext in DIRECT:
+            self.send_response(302)
+            self.send_header("Location", raw)
+            self.end_headers()
+            return
+        data = p.read_bytes()[:2_000_000]
+        if b"\0" in data[:8000]:
+            return self.page(p.name, head, f'<p class="empty">File nhị phân ({human(p.stat().st_size)}), không xem trước được.</p>')
+        text = data.decode("utf-8", "replace")
+        if ext in (".md", ".markdown"):
+            src = json.dumps(text).replace("</", "<\\/")  # nhét an toàn vào <script>
+            body = (f'<article class="doc" id="md"></article>'
+                    f'<script src="{CDN}/marked@12.0.2/marked.min.js"></script>{HLJS}'
+                    f"<script>const s={src},m=document.getElementById('md');"
+                    "if(window.marked){m.innerHTML=marked.parse(s);window.hljs&&m.querySelectorAll('pre code').forEach(e=>hljs.highlightElement(e))}"
+                    "else{m.innerHTML='<pre class=code></pre>';m.firstChild.textContent=s}</script>")
+            return self.page(p.name, head, body)
+        lang = {".py": "python", ".sh": "bash", ".zsh": "bash", ".js": "javascript", ".ts": "typescript", ".json": "json",
+                ".toml": "ini", ".yml": "yaml", ".yaml": "yaml", ".css": "css", ".php": "php", ".rs": "rust", ".go": "go",
+                ".swift": "swift", ".sql": "sql", ".xml": "xml", ".liquid": "xml"}.get(ext, "plaintext")
+        body = (f'<pre class="code"><code class="language-{lang}">{html.escape(text)}</code></pre>{HLJS}'
+                "<script>window.hljs&&hljs.highlightElement(document.querySelector('code'))</script>")
+        self.page(p.name, head, body)
+
+    def raw(self, p):
+        size = p.stat().st_size
+        ctype = mimetypes.guess_type(p.name)[0] or "application/octet-stream"
+        if ctype.startswith("text/") or p.suffix.lower() in (".svg",):
+            ctype += "; charset=utf-8"
+        rng = self.headers.get("Range", "")
+        start, end = 0, size - 1
+        if rng.startswith("bytes="):
+            a, _, b = rng[6:].split(",")[0].partition("-")
+            if a:
+                start, end = int(a), int(b) if b else size - 1
+            elif b:
+                start = max(0, size - int(b))
+            end = min(end, size - 1)
+        with open(p, "rb") as fh:
+            fh.seek(start)
+            data = fh.read(end - start + 1) if self.command != "HEAD" else b""
+        self.send_response(206 if rng else 200)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Accept-Ranges", "bytes")
+        self.send_header("Content-Length", str(end - start + 1))
+        if rng:
+            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.end_headers()
+        if self.command != "HEAD":
+            try:
+                self.wfile.write(data)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+
+
+def running():
+    try:
+        st = json.loads(STATE.read_text())
+        with socket.create_connection(("127.0.0.1", st["port"]), timeout=0.3):
+            return st
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+if __name__ == "__main__":
+    # pv-serve --url <file|thư mục> : bật máy chủ nền nếu chưa chạy, in URL xem file/thư mục đó
+    if sys.argv[1:2] == ["--url"]:
+        st = running()
+        if not st:
+            import subprocess
+            subprocess.Popen([sys.executable, os.path.realpath(__file__)], stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL, start_new_session=True)
+            for _ in range(50):
+                time.sleep(0.05)
+                if st := running():
+                    break
+        if not st:
+            sys.exit(1)
+        p = pathlib.Path(sys.argv[2]).resolve()
+        print(f"http://127.0.0.1:{st['port']}/{st['token']}/{'browse' if p.is_dir() else 'view'}{urllib.parse.quote(str(p))}")
+        sys.exit(0)
+    Handler.token = secrets.token_urlsafe(12)
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(json.dumps({"port": srv.server_address[1], "token": Handler.token, "pid": os.getpid()}))
+
+    def watchdog():
+        while time.time() - Handler.last < IDLE:
+            time.sleep(30)
+        srv.shutdown()
+
+    threading.Thread(target=watchdog, daemon=True).start()
+    srv.serve_forever()

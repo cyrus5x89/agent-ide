@@ -32,7 +32,7 @@ Cần `uv` và plugin trình duyệt của iTerm2 (lần đầu mở khung trìn
 
 ## Khung preview (macOS)
 
-`ide` mở khung trình duyệt của iTerm2 bên phải, liệt kê file trong thư mục đang đứng (sâu 3 cấp). Bấm video, ảnh, nhạc là phát ngay phía trên; HTML, PDF, Markdown, JSON thì mở thẳng. Đổi nội dung bằng `pv <file|url|thư mục>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), đóng bằng `pvx`. Windows Terminal không có khung trình duyệt nên ở đó `ide` chỉ chạy agent.
+`ide` mở khung trình duyệt của iTerm2 bên phải thành một trình duyệt file nhỏ cho thư mục đang đứng (thư mục xếp trước, có đường dẫn để bấm quay lại, `..` để lên một cấp). Video, ảnh, nhạc phát ngay và tua được, Markdown hiện đẹp, code có tô màu, chữ tiếng Việt đọc đúng UTF-8, HTML và PDF mở thẳng. Phía sau là `bin/pv-serve`, một máy chủ nhỏ chỉ chạy trên 127.0.0.1, mỗi đường dẫn có mã ngẫu nhiên, không dùng 8 tiếng thì tự tắt. Đổi nội dung bằng `pv <file|url|thư mục>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), đóng bằng `pvx`. Windows Terminal không có khung trình duyệt nên ở đó `ide` chỉ chạy agent.
 
 ## Lệnh có sẵn
 

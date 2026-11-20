@@ -32,7 +32,7 @@ Needs `uv` and the iTerm2 browser plugin (iTerm2 asks to install it the first ti
 
 ## Preview pane (macOS)
 
-`ide` opens an iTerm2 browser pane on the right with the files of the current folder (3 levels deep). Click a video, image or audio file to play it on top; HTML, PDF, Markdown and JSON open directly. Point it elsewhere with `pv <file|url|folder>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), close it with `pvx`. Windows Terminal has no browser pane, so there `ide` only starts the agent.
+`ide` opens an iTerm2 browser pane on the right as a small file explorer for the current folder (folders first, breadcrumb, back with `..`). Videos, images and audio play inline with seeking, Markdown is rendered, code is highlighted, text is read as UTF-8, HTML and PDF open directly. It is served by `bin/pv-serve`, a tiny local server on 127.0.0.1 with a random token in every URL that shuts itself down after 8 idle hours. Point it elsewhere with `pv <file|url|folder>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), close it with `pvx`. Windows Terminal has no browser pane, so there `ide` only starts the agent.
 
 ## Presets
 

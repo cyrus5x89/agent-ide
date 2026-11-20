@@ -20,55 +20,11 @@ close_prev() {
 if [[ ${0:t} == pvx || $1 == -x ]]; then close_prev; exit 0; fi
 [[ -z $1 ]] && { echo "dùng: pv <file|url|thư mục>   ·   pvx để đóng"; exit 1; }
 
-STYLE='html,body{margin:0;height:100%;background:#0E0E0E;color:#8A847D;font:12px -apple-system,system-ui}'
 t=$1; label=${t:A:t}
 if [[ $t == (http|https|file)://* ]]; then url=$t
-elif [[ -d $t ]]; then
-  # thư mục: danh sách file, bấm video/ảnh/nhạc là phát ngay phía trên, html/pdf thì mở thẳng
-  python3 - "${t:A}" "$STYLE" > ~/.cache/pv/folder.html <<'PY'
-import html, json, os, sys, pathlib
-root, style = pathlib.Path(sys.argv[1]), sys.argv[2]
-skip = {".git", "node_modules", ".venv", "__pycache__", ".cache"}
-files = []
-for d, dirs, names in os.walk(root):
-    dirs[:] = sorted(x for x in dirs if x not in skip and not x.startswith("."))
-    if len(pathlib.Path(d).relative_to(root).parts) >= 3: dirs[:] = []
-    files += [pathlib.Path(d, n) for n in sorted(names) if not n.startswith(".")]
-    if len(files) > 600: break
-rows = "".join(f'<li data-u="{html.escape(p.as_uri())}">{html.escape(str(p.relative_to(root)))}</li>' for p in files[:600])
-print(f"""<!doctype html><meta charset=utf-8><title>{html.escape(root.name)}</title><style>{style}
-#v{{display:none;background:#000;text-align:center}}#v *{{max-width:100%;max-height:55vh}}
-h1{{font-size:12px;color:#D97757;margin:10px 12px}}ul{{list-style:none;margin:0;padding:0 0 20px}}
-li{{padding:3px 12px;color:#CFCAC3;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-li:hover,li.on{{background:#3A3532}}li.m{{color:#E8E6E3}}</style>
-<div id=v></div><h1>{html.escape(str(root))}</h1><ul>{rows}</ul><script>
-const V=/\\.(mp4|mov|m4v|webm)$/i,A=/\\.(mp3|wav|m4a|aac|flac|ogg)$/i,I=/\\.(png|jpe?g|gif|webp|svg|heic|avif|bmp)$/i,O=/\\.(html?|pdf|txt|md|json)$/i;
-for(const li of document.querySelectorAll('li')){{const u=li.dataset.u;if(V.test(u)||A.test(u)||I.test(u))li.classList.add('m');
-li.onclick=()=>{{if(O.test(u))return location=u;const v=document.getElementById('v');
-v.innerHTML=V.test(u)?`<video src="${{u}}" controls autoplay playsinline></video>`:A.test(u)?`<audio src="${{u}}" controls autoplay></audio>`:I.test(u)?`<img src="${{u}}">`:'';
-v.style.display=v.innerHTML?'block':'none';document.querySelector('.on')?.classList.remove('on');li.classList.add('on');}}}}
-</script>""")
-PY
-  url="file://$HOME/.cache/pv/folder.html?t=$(date +%s)"
 elif [[ -e $t ]]; then
-  url=$(python3 -c 'import sys,pathlib;print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$t")
-  ext=${${t:e}:l}; tag=""
-  case $ext in
-    mp4|mov|m4v|webm) tag="<video src=\"$url\" controls autoplay playsinline></video>";;
-    mp3|wav|m4a|aac|flac|ogg) tag="<audio src=\"$url\" controls autoplay></audio>";;
-    png|jpg|jpeg|gif|webp|svg|heic|avif|bmp) tag="<img src=\"$url\">";;
-  esac
-  if [[ -n $tag ]]; then
-    # WebKit không mở thẳng .mp4 được nên bọc trong trang html
-    cat > ~/.cache/pv/view.html <<HTML
-<!doctype html><meta charset=utf-8><title>${label}</title>
-<style>${STYLE}
-body{display:grid;grid-template:minmax(0,1fr) auto / minmax(0,1fr);place-items:center}
-video,img{max-width:100%;max-height:calc(100vh - 28px);object-fit:contain}audio{width:80%}
-p{margin:6px}</style>${tag}<p>${label}</p>
-HTML
-    url="file://$HOME/.cache/pv/view.html?t=$(date +%s)"
-  fi
+  # file/thư mục trên máy: qua pv-serve (duyệt thư mục, Markdown, code tô màu, UTF-8, tua video)
+  url=$("${0:A:h}/pv-serve" --url "$t") || { echo "pv: không bật được pv-serve"; exit 1; }
 elif [[ $t == (localhost|127.0.0.1|0.0.0.0)* || $t == :[0-9]* ]]; then url="http://${t#:}"; [[ $t == :* ]] && url="http://localhost$t"
 elif [[ $t == *.* ]]; then url="https://$t"
 else echo "pv: không thấy file hoặc url: $t"; exit 1; fi
