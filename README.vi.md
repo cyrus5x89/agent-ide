@@ -114,6 +114,10 @@ Mascot Claude Code biến hình theo từng mức effort (`art/saiyan/`, SVG + P
 
 ![low, medium, high, xhigh, max, ultracode](art/saiyan/sheet.png)
 
+Claude, Codex và agy biến hình, từ dạng gốc rồi low → ultracode (`art/saiyan/web/out/`, tạo trên chatgpt.com bằng bộ prompt ở `art/saiyan/web/`):
+
+![Claude, Codex, agy: base, low, medium, high, xhigh, max, ultracode](art/saiyan/mascots.png)
+
 Tạo lại: `art/saiyan/gen.sh [cấp...]` (cần lệnh `studio image`), rồi `uv run --python 3.12 --with vtracer --with pillow python art/saiyan/vectorize.py`.
 
 ## Tuỳ chỉnh

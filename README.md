@@ -114,6 +114,10 @@ Claude Code's mascot powering up per effort level (`art/saiyan/`, SVG + PNG, 18x
 
 ![low, medium, high, xhigh, max, ultracode](art/saiyan/sheet.png)
 
+Claude, Codex and agy powering up, base then low → ultracode (`art/saiyan/web/out/`, made on chatgpt.com with the prompt kit in `art/saiyan/web/`):
+
+![Claude, Codex, agy: base, low, medium, high, xhigh, max, ultracode](art/saiyan/mascots.png)
+
 Regenerate: `art/saiyan/gen.sh [level...]` (needs the `studio image` CLI), then `uv run --python 3.12 --with vtracer --with pillow python art/saiyan/vectorize.py`.
 
 ## Customise
