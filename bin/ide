@@ -11,7 +11,7 @@
 # Preview là khung trình duyệt của iTerm2 (bin/pv): danh sách file thư mục, bấm video/ảnh là phát.
 # Đổi nội dung bằng `pv <file|url|thư mục>`, đóng bằng `pvx`. Windows Terminal không có trình duyệt
 # trong khung nên chỉ chạy agent.
-import os, shlex, shutil, subprocess, sys
+import os, shlex, shutil, signal, subprocess, sys
 
 # Thêm lệnh mới: tên gõ → (lệnh chạy, màu tab, giải thích EN, giải thích VN)
 C, X, G = "D97757", "10A37F", "4285F4"
@@ -90,4 +90,13 @@ if name:
     cmd = [*shlex.split(AGENTS[name][0]), *rest]
     if os.name == "nt":
         sys.exit(subprocess.run([shutil.which(cmd[0]) or cmd[0], *cmd[1:]]).returncode)
-    os.execvp(cmd[0], cmd)
+    # chạy agent như tiến trình con (không exec) để khi agent thoát thì đóng luôn khung preview
+    signal.signal(signal.SIGINT, signal.SIG_IGN)  # Ctrl+C là của agent, ide chỉ chờ
+    try:
+        code = subprocess.run(cmd).returncode
+    except FileNotFoundError:
+        sys.exit(f"ide: chưa cài {cmd[0]}")
+    finally:
+        if os.environ.get("ITERM_SESSION_ID"):
+            subprocess.run([pv, "-x"])
+    sys.exit(code)
