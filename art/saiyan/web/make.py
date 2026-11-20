@@ -23,15 +23,16 @@ MUSCLE = "Make the body HEAVILY MUSCULAR - big pecs, six-pack, bulging arms."
 # nhân vật: (mô tả, tính cách/dáng theo tinh thần nhân vật gợi ý, gợi ý ghi cho người đọc)
 CHAR = {
     "codex": ("Codex (GPT)", "kiểu Cađíc: kiêu hãnh, khoanh tay, tóc dựng thẳng có mỏm chữ V trước trán",
-              "a small puffy cloud-shaped creature built from the Codex app icon in Image 1: a scalloped cloud body with a soft "
-              "lavender-to-royal-blue gradient (#A9A4FF to #3B4CF5), its face is the icon's white terminal prompt '>_' "
-              "(the '>' is a narrowed eye, the '_' a flat mouth), tiny stubby arms, two tiny feet",
+              "the Codex mascot in Image 1: a periwinkle-blue (#5B6EF0) robot with a puffy cloud-shaped head, a dark navy screen "
+              "face showing a glowing cyan terminal prompt '>_' as its eyes, a small round body with a smaller '>_' on the chest, "
+              "short arms and two short legs",
               "Personality: the proud elite rival. Arms crossed, chin up, smug confident smirk. Hair always rises straight up like "
               "one tall flame with a sharp V-shaped widow's peak at the forehead."),
     "agy": ("agy (Antigravity)", "kiểu Broly: khổng lồ, cơ bắp cuồn cuộn, tóc dài hoang dã, hào quang ánh xanh lá",
-            "a creature built from the Antigravity app icon in Image 1: a tall rounded arch shape like a smooth letter A without "
-            "the crossbar, the arch's two ends are its legs, the rounded top is its head with two small white eyes, the body keeps "
-            "the icon's gradient (green and yellow-red on top flowing into Google blue #4285F4 down the legs), tiny stubby arms",
+            "the agy mascot in Image 1: a tall rounded arch-shaped body like a smooth letter A without the crossbar (the two ends "
+            "are its legs), a gradient from golden yellow and coral red on top into Google blue #4285F4 down the legs, a dark navy "
+            "visor across the head with two glowing pale-cyan eyes, a white four-pointed sparkle on the chest, short arms, and a "
+            "glowing cyan anti-gravity ring hovering under its feet",
             "Personality: the legendary berserker. Hulking and towering, wild untamed spiky hair that sweeps back and outward, "
             "a gold ring around its neck and gold armbands, a faint lime-green tint at the edge of every aura, roaring with power."),
 }
@@ -52,11 +53,11 @@ for lv, ref in [("medium", "3-than-gay.png"), ("high", "2-than-max.png"), ("xhig
 
 for key, (name, vibe, desc, trait) in CHAR.items():
     cards.append(f'<h2 id="{key}">{name} <small>{vibe}</small></h2>')
-    icon = {"codex": "6-icon-codex.png", "agy": "7-icon-agy.png"}[key]
-    card(f"{key}-base", [icon, "4-mau-low.png"],
-         f"Image 1 is an app icon, Image 2 is a style reference. Design a mascot: {desc}. No hair yet, standing calmly. "
-         f"{trait.split('.')[0]}. Match the drawing style of Image 2 (outline weight, cel shading, background) but NOT its "
-         f"character. {STYLE}")
+    concept = {"codex": "6-codex-mascot.png", "agy": "agy-concept.png"}[key]
+    card(f"{key}-base", [concept, "4-mau-low.png"],
+         f"Image 1 is the mascot, Image 2 is a style reference. Redraw {desc}. Keep its shape, colours and face; no hair yet, "
+         f"standing calmly. {trait.split('.')[0]}. Match the drawing style of Image 2 (outline weight, cel shading, background) "
+         f"but NOT its character. {STYLE}")
     for lv in LEVEL:
         card(f"{key}-{lv}", [f"({key}-base vừa tạo)", "4-mau-low.png" if lv == "low" else "5-mau-max.png"],
              f"Image 1 is the mascot, Image 2 is a style reference for the power-up look only. Draw the mascot from Image 1 "

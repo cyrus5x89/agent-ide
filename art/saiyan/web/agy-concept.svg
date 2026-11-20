@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2B233"/><stop offset=".22" stop-color="#E8553E"/>
+      <stop offset=".48" stop-color="#4285F4"/><stop offset="1" stop-color="#2F62D8"/>
+    </linearGradient>
+    <linearGradient id="hl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7BC96F"/><stop offset="1" stop-color="#7BC96F" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="#0E0E0E"/>
+  <!-- vòng phản trọng lực dưới chân -->
+  <ellipse cx="200" cy="352" rx="92" ry="14" fill="none" stroke="#7FD3FF" stroke-width="5" opacity=".8"/>
+  <ellipse cx="200" cy="352" rx="60" ry="8" fill="none" stroke="#7FD3FF" stroke-width="3" opacity=".45"/>
+  <!-- tay ngắn, vẽ trước để thân đè lên chỗ nối -->
+  <rect x="86" y="212" width="54" height="24" rx="12" fill="#4285F4" stroke="#000" stroke-width="6"/>
+  <rect x="260" y="212" width="54" height="24" rx="12" fill="#4285F4" stroke="#000" stroke-width="6"/>
+  <!-- thân hình vòm chữ A, hai đầu vòm là chân -->
+  <path d="M110 318 C110 190 140 82 200 82 C260 82 290 190 290 318 L246 318 C246 240 232 200 200 200 C168 200 154 240 154 318 Z"
+        fill="url(#body)" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
+  <!-- kính mặt tối, mắt phát sáng -->
+  <rect x="152" y="118" width="96" height="50" rx="18" fill="#141A33" stroke="#111" stroke-width="6"/>
+  <rect x="172" y="134" width="16" height="18" rx="5" fill="#BFF3FF"/>
+  <rect x="212" y="134" width="16" height="18" rx="5" fill="#BFF3FF"/>
+  <!-- sao Gemini 4 cánh trên ngực -->
+  <path d="M200 178 C203 190 206 193 218 196 C206 199 203 202 200 214 C197 202 194 199 182 196 C194 193 197 190 200 178 Z" fill="#FFFFFF"/>
+</svg>
