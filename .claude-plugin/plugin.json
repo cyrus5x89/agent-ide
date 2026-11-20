@@ -1,5 +1,5 @@
 {
-  "name": "agent-ide",
+  "name": "claude-ide-dragonball",
   "description": "IDE layout + Claude-warm theme for iTerm2 and Windows Terminal, for Claude Code, Codex, agy and other CLI agents",
   "version": "0.2.0",
   "author": {

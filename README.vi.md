@@ -1,4 +1,4 @@
-# agent-ide
+# Claude IDE Dragonball
 
 Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên iTerm2 (macOS) và Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
 
@@ -12,22 +12,22 @@ Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên 
 └──────────────┴──────────────┘
 ```
 
-- **Theme Claude IDE**: nền đen `#0E0E0E`, cam Claude `#D97757`, font JetBrains Mono Nerd, nền đặc, khung không dùng thì tối đi. Đặt làm profile mặc định nên cửa sổ do CC Switch hay app khác mở cũng có theme.
+- **Theme Claude IDE Dragonball**: nền đen `#0E0E0E`, cam Claude `#D97757`, font JetBrains Mono Nerd, nền đặc, khung không dùng thì tối đi. Đặt làm profile mặc định nên cửa sổ do CC Switch hay app khác mở cũng có theme.
 - **Lệnh `ide`**: mở khung preview rồi chạy agent ở khung chính. Gõ `ide` không kèm gì thì chỉ mở preview, nên trong agent đang chạy gõ `! ide`. Tab đổi màu theo agent (iTerm2).
 - **Skill `ide`** cho Claude Code, Codex, agy: nói "chia khung IDE" là agent tự chạy `ide`.
 
 ## Cài
 
 ```bash
-git clone https://github.com/cyrus5x89/agent-ide && ./agent-ide/install.sh   # macOS
-pwsh ./agent-ide/install.ps1                                                  # Windows
+git clone https://github.com/cyrus5x89/claude-ide-dragonball && ./claude-ide-dragonball/install.sh   # macOS
+pwsh ./claude-ide-dragonball/install.ps1                                                  # Windows
 ```
 
 Cần `uv` và plugin trình duyệt của iTerm2 (lần đầu mở khung trình duyệt iTerm2 sẽ hỏi cài); nên có font JetBrains Mono Nerd. Plugin Claude Code (chỉ có skill, không có theme và lệnh `ide`):
 
 ```
-/plugin marketplace add cyrus5x89/agent-ide
-/plugin install agent-ide@agent-ide
+/plugin marketplace add cyrus5x89/claude-ide-dragonball
+/plugin install claude-ide-dragonball@claude-ide-dragonball
 ```
 
 ## Khung preview (macOS)
@@ -64,6 +64,29 @@ Gõ thêm gì sau tên lệnh thì được chuyển thẳng cho agent, ví dụ
 | `ide cursor` | `cursor-agent` | Cursor agent CLI |
 
 **Chọn chế độ quyền nào?** Repo lạ thì mở `ccp` (chỉ lên kế hoạch) để đọc trước. Làm việc hằng ngày thì `cca` hoặc `cce`. `ccy` / `cxy` / `agyy` chỉ dùng ở chỗ hỏng cũng không sao: worktree mới (`ccw`), container, hoặc repo `git reset` lại được. Ba lệnh này bỏ qua mọi bước xác nhận, kể cả xoá file và push.
+
+## Màu theo effort + ngọc rồng (iTerm2)
+
+`ide-tint <effort>` đổi màu khung iTerm2 đang đứng theo mức effort của Claude Code và in dãy ngọc rồng cho status line. Nền vẫn đen; con trỏ, tab, vùng chọn, link và các màu vàng/xanh/tím/lục lam trong code đổi theo cấp, đỏ/xanh lá giữ nguyên để diff vẫn đọc được.
+
+| Effort | Ngọc | Màu nhấn |
+|---|---|---|
+| low | ●○○○○○○ | vàng `#F2C230` |
+| medium | ●●○○○○○ | vàng sẫm `#C98A0B` |
+| high | ●●●○○○○ | vàng sáng `#FFD84D` |
+| xhigh | ●●●●○○○ | đỏ `#E0384F` |
+| max | ●●●●●○○ | xanh `#2FA8F0` |
+| ultracode | ●●●●●●● | bạc `#D8DEE9` (prompt gần nhất có chữ "ultracode") |
+
+Gọi từ script status line, truyền effort lấy từ JSON của status line (`effort.level`) và đường dẫn transcript:
+
+```python
+out = subprocess.run(["ide-tint", effort, "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
+```
+
+Nó chỉ gọi iTerm2 khi mức effort đổi. Profile còn có hình mờ Claude + ngọc rồng ở góc dưới phải (`art/dragonball/watermark.png`, vẽ bằng `make.py`).
+
+![Claude và 7 viên ngọc rồng](art/dragonball/hero.png)
 
 ## Mascot theo mức effort
 

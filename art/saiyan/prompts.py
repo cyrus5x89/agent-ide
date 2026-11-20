@@ -12,12 +12,12 @@ LEVELS = {
  "medium": "Power level 2: slightly slimmer than level 1, sharper spiky hair in a DEEPER darker gold. MODEST effects only: a thin "
            "golden outline glow hugging the body (no big flames), and just 2-3 tiny blue-white electric sparks near the hair. "
            "Much less spectacular than higher levels.",
- "high": "Power level 3: the creature is MUSCULAR - big pecs, six-pack, bulging arms, flexing. Very LONG golden hair, a huge "
+ "high": "Power level 3: the creature is LEAN and toned - a calm square body with subtle pecs and a light six-pack, arms straight out at the sides (not flexing). Very LONG golden hair, a huge "
          "spiky mane flowing down its back almost to the ground, no eyebrows. RESTRAINED effects: a thin golden outline glow and "
          "4-5 small electric sparks, no big flame aura, no lightning everywhere - the long hair is the star, the effects stay "
          "weaker than the later red, blue and silver levels.",
- "xhigh": "Power level 4: MUSCULAR but lean and calm, SHORT spiky hair in CRIMSON RED, a soft red-orange flame aura like a "
-          "divine fire, a few red embers floating. Serene confident expression.",
+ "xhigh": "Power level 4: HEAVILY MUSCULAR - huge pecs, deep six-pack, big bulging biceps raised in a double flex. SHORT spiky hair in CRIMSON RED, a soft red-orange flame aura like a "
+          "divine fire, a few red embers floating. Fierce confident expression.",
  "max": "Power level 5: MUSCULAR, SHORT upright spiky hair in bright CYAN-BLUE, a sharp blue flame aura with a white core, "
         "glowing blue sparkles. Focused expression.",
  "ultracode": "Power level 6, the ultimate form: MUSCULAR, SHORT spiky SILVER-WHITE hair, silver glowing eyes, a tall silvery-white "

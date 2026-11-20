@@ -3,19 +3,22 @@
 set -e
 cd "${0:A:h}"
 DP="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
-LOCAL="$HOME/.config/agent-ide/iterm-local.json"   # phím tắt riêng của máy, không đưa vào repo
+LOCAL="$HOME/.config/claude-ide-dragonball/iterm-local.json"   # phím tắt riêng của máy, không đưa vào repo
 
 command -v uv >/dev/null || { echo "cần uv: curl -LsSf https://astral.sh/uv/install.sh | sh"; exit 1; }
 mkdir -p "$DP" ~/.local/bin
 python3 - themes/iterm2/claude-ide.json "$LOCAL" "$DP/claude-ide.json" <<'PY'
 import json, os, sys
 d = json.load(open(sys.argv[1]))
+# hình mờ Claude + ngọc rồng ở góc dưới phải (ảnh nền đen sẵn, khớp màu nền)
+d["Profiles"][0].update({"Background Image Location": os.path.abspath("art/dragonball/watermark.png"),
+                         "Background Image Mode": 3, "Blend": 1.0})
 if os.path.exists(sys.argv[2]):
     d["Profiles"][0].update(json.load(open(sys.argv[2])))
 json.dump(d, open(sys.argv[3], "w"), indent=1)
 PY
-for f in ide pv pvx; do ln -sf "$PWD/bin/$f" ~/.local/bin/$f; done
-chmod +x bin/ide bin/pv
+for f in ide ide-tint pv pvx; do ln -sf "$PWD/bin/$f" ~/.local/bin/$f; done
+chmod +x bin/ide bin/ide-tint bin/pv
 
 # đặt làm profile mặc định (cửa sổ do CC Switch mở cũng ăn theme) + làm mờ khung không focus
 for i in {1..30}; do

@@ -1,4 +1,4 @@
-# agent-ide
+# Claude IDE Dragonball
 
 An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTerm2 (macOS) and Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
 
@@ -12,22 +12,22 @@ An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTe
 └──────────────┴──────────────┘
 ```
 
-- **Claude IDE theme**: black `#0E0E0E`, Claude orange `#D97757`, JetBrains Mono Nerd Font, solid background, unfocused panes dimmed. Set as the default profile, so windows opened by other launchers (CC Switch, etc.) get it too.
+- **Claude IDE Dragonball theme**: black `#0E0E0E`, Claude orange `#D97757`, JetBrains Mono Nerd Font, solid background, unfocused panes dimmed. Set as the default profile, so windows opened by other launchers (CC Switch, etc.) get it too.
 - **`ide` command**: opens the preview pane, then starts the agent in the main pane. Plain `ide` only opens the preview, so inside a running agent type `! ide`. The tab takes the agent's colour (iTerm2).
 - **`ide` skill** for Claude Code, Codex and agy: say "give me the IDE layout" and the agent runs `ide` itself.
 
 ## Install
 
 ```bash
-git clone https://github.com/cyrus5x89/agent-ide && ./agent-ide/install.sh   # macOS
-pwsh ./agent-ide/install.ps1                                                  # Windows
+git clone https://github.com/cyrus5x89/claude-ide-dragonball && ./claude-ide-dragonball/install.sh   # macOS
+pwsh ./claude-ide-dragonball/install.ps1                                                  # Windows
 ```
 
 Needs `uv` and the iTerm2 browser plugin (iTerm2 asks to install it the first time a browser pane opens); JetBrains Mono Nerd Font recommended. Claude Code plugin (skill only, no theme or `ide` command):
 
 ```
-/plugin marketplace add cyrus5x89/agent-ide
-/plugin install agent-ide@agent-ide
+/plugin marketplace add cyrus5x89/claude-ide-dragonball
+/plugin install claude-ide-dragonball@claude-ide-dragonball
 ```
 
 ## Preview pane (macOS)
@@ -64,6 +64,29 @@ Anything after the preset is passed to the agent, e.g. `ide ccy --model opus` or
 | `ide cursor` | `cursor-agent` | Cursor agent CLI |
 
 **Which permission mode?** Start with `ccp` (plan) to read an unfamiliar repo, `cca` or `cce` for everyday work, and `ccy` / `cxy` / `agyy` only where nothing can hurt you: a fresh worktree (`ccw`), a container, or a repo you can `git reset`. Those three skip every confirmation, including deletes and pushes.
+
+## Effort colours + dragon balls (iTerm2)
+
+`ide-tint <effort>` retints the current iTerm2 pane for the Claude Code effort level and prints a dragon-ball meter for your status line. The background stays black; cursor, tab, selection, links and the yellow/blue/magenta/cyan code colours follow the level, red/green stay put so diffs still read.
+
+| Effort | Balls | Accent |
+|---|---|---|
+| low | ●○○○○○○ | gold `#F2C230` |
+| medium | ●●○○○○○ | deep gold `#C98A0B` |
+| high | ●●●○○○○ | bright gold `#FFD84D` |
+| xhigh | ●●●●○○○ | crimson `#E0384F` |
+| max | ●●●●●○○ | blue `#2FA8F0` |
+| ultracode | ●●●●●●● | silver `#D8DEE9` (your last prompt contains "ultracode") |
+
+Call it from your status line script with the effort from the status line JSON (`effort.level`) and the transcript path:
+
+```python
+out = subprocess.run(["ide-tint", effort, "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
+```
+
+It only talks to iTerm2 when the level changes. The profile also carries a faint Claude + dragon balls watermark in the bottom-right corner (`art/dragonball/watermark.png`, drawn by `make.py`).
+
+![Claude and the seven dragon balls](art/dragonball/hero.png)
 
 ## Effort mascots
 

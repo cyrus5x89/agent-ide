@@ -1,0 +1,4 @@
+Use case: identity-preserve
+Primary request: Keep the creature's body EXACTLY as in Image 1: same orange square body, same muscles, same arms, legs, eyes, outline, size and position. Change ONLY the hair and the effects: replace the red hair with sharper spiky hair in a DEEP DARK GOLD, about the same height as now; remove the red flame aura and red embers entirely; add only a thin golden outline glow hugging the body and 2-3 tiny blue-white electric sparks near the hair. Keep the plain flat #0E0E0E background and the same anime cel-shaded style.
+Input images: Image 1: edit target
+Constraints: keep face, body, pose, hair and expression identical; change only what is asked; match lighting and shadows

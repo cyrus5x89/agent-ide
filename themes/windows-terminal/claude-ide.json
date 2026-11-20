@@ -1,7 +1,7 @@
 {
   "schemes": [
     {
-      "name": "Claude IDE",
+      "name": "Claude IDE Dragonball",
       "background": "#0E0E0E",
       "foreground": "#E8E6E3",
       "cursorColor": "#D97757",
@@ -27,10 +27,10 @@
   "profiles": [
     {
       "guid": "{c1a0de1d-0000-4000-8000-000000000001}",
-      "name": "Claude IDE",
+      "name": "Claude IDE Dragonball",
       "commandline": "pwsh.exe -NoLogo",
       "startingDirectory": "%USERPROFILE%",
-      "colorScheme": "Claude IDE",
+      "colorScheme": "Claude IDE Dragonball",
       "tabColor": "#D97757",
       "font": {
         "face": "JetBrainsMono Nerd Font Mono",

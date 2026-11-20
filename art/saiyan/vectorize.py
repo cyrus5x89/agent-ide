@@ -1,14 +1,15 @@
 # raw-<lv>.png → <lv>.svg (nền trong suốt) + <lv>.png + sheet.png
-# uv run --python 3.12 --with vtracer --with pillow python vectorize.py  (vtracer crash trên 3.14)
+# uv run --python 3.12 --with vtracer --with pillow --with scipy --with numpy python vectorize.py  (vtracer crash trên 3.14)
 import pathlib, subprocess
 import vtracer
+from body import body_box
 from PIL import Image, ImageDraw
 
 HERE = pathlib.Path(__file__).parent
 LEVELS = ["low", "medium", "high", "xhigh", "max", "ultracode"]
-# lưới 18x18 ô, mỗi ô 32px: cao bao nhiêu ô (tính cả tóc + hào quang), chân đứng ở hàng 17
-CELL, GRID = 32, 18
-HEIGHT = {"low": 10, "medium": 10, "high": 10, "xhigh": 13, "max": 13, "ultracode": 13}
+# lưới 18x18 ô, mỗi ô 32px. Đo theo THÂN (không tính tóc, hào quang): thân cao bao nhiêu ô, chân thân đứng ở hàng 15
+CELL, GRID, FOOT = 32, 18, 15
+BODY = {"low": 5, "medium": 5, "high": 6, "xhigh": 6, "max": 6, "ultracode": 6}
 
 for lv in LEVELS:
     raw = HERE / f"raw-{lv}.png"
@@ -22,14 +23,18 @@ for lv in LEVELS:
         ImageDraw.floodfill(mask, xy, (255, 0, 255), thresh=40)
     rgba = im.convert("RGBA")
     rgba.putdata([(0, 0, 0, 0) if m == (255, 0, 255) else p for p, m in zip(rgba.getdata(), mask.getdata())])
-    # cắt sát hình rồi phóng cho đúng số ô chiều cao, căn giữa ngang, chung đường đáy
-    fig = rgba.crop(rgba.getbbox())
-    k = HEIGHT[lv] * CELL / fig.height
-    fig = fig.resize((round(fig.width * k), HEIGHT[lv] * CELL), Image.LANCZOS)
+    # phóng cho thân cao đúng BODY ô, căn giữa theo thân, chân thân ở hàng FOOT
+    bx0, by0, bx1, by1 = body_box(im)
+    k = BODY[lv] * CELL / (by1 - by0)
+    big = rgba.resize((round(w * k), round(h * k)), Image.LANCZOS)
     size = GRID * CELL
-    assert fig.width <= (GRID - 1) * CELL, f"{lv} rộng {fig.width / CELL:.1f} ô, vượt lưới"
+    ox, oy = round(size / 2 - (bx0 + bx1) / 2 * k), round(FOOT * CELL - by1 * k)
     rgba = Image.new("RGBA", (size, size))
-    rgba.paste(fig, ((size - fig.width) // 2, (GRID - 1) * CELL - fig.height), fig)
+    rgba.paste(big, (ox, oy), big)
+    cut = big.getbbox()
+    lost = [n for n, v in (("trái", ox + cut[0] < 0), ("phải", ox + cut[2] > size), ("trên", oy + cut[1] < 0), ("dưới", oy + cut[3] > size)) if v]
+    if lost:
+        print(f"cảnh báo: {lv} tràn lưới phía {', '.join(lost)}")
     tmp = HERE / f".{lv}.png"
     rgba.save(tmp)
     vtracer.convert_image_to_svg_py(str(tmp), str(HERE / f"{lv}.svg"), colormode="color", hierarchical="stacked",

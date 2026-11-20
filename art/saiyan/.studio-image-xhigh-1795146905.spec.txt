@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: square post 1:1
+Primary request: The character is the mascot in Image 1: a small blocky orange (#D97757) creature - a wide rectangular body, two small dark square eyes cut into the top, short stubby arms sticking straight out left and right, four tiny square legs underneath. Keep that exact silhouette idea and colour so it is instantly the same mascot, but draw it as a dynamic 2D anime power-up illustration: thick clean black outlines, flat cel shading with 2-3 tones, no gradients on the body, centred, full body, facing the viewer, powering up with a fierce determined look (angry eyebrows shapes above the square eyes). Plain flat solid #0E0E0E background, nothing else in the scene, no text, no human, no existing anime character. Square 1:1 composition with margin around the figure. HAIR RULE: the hair is a big anime power-up hairdo that covers the WHOLE top of the head from edge to edge - 6 to 8 thick sharp spikes fanning upward and outward, each with a darker shade side and a lighter highlight side; never a small tuft or a crown in the middle. Power level 4: HEAVILY MUSCULAR - huge pecs, deep six-pack, big bulging biceps raised in a double flex. SHORT spiky hair in CRIMSON RED, a soft red-orange flame aura like a divine fire, a few red embers floating. Fierce confident expression.
+Input images: Image 1: reference
+Style/medium: stylized concept render
+Composition/framing: aspect ratio 1:1
+Constraints: no text in the image

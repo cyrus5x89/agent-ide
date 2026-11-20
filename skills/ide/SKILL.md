@@ -13,6 +13,6 @@ ide
 
 It keeps your own pane as the main pane and opens an iTerm2 browser pane on the right listing the current folder; clicking a video or image plays it. To show something specific instead, run `pv <file|url|folder>` (for example `pv out/render.mp4` or `pv localhost:3000`); `pvx` closes the pane. Running either again replaces the preview, it never stacks panes. Windows Terminal has no browser pane, so there `ide` does nothing useful.
 
-If `ide` is not found, the user has not run the installer: `git clone https://github.com/cyrus5x89/agent-ide && ./agent-ide/install.sh` (macOS) or `install.ps1` (Windows).
+If `ide` is not found, the user has not run the installer: `git clone https://github.com/cyrus5x89/claude-ide-dragonball && ./claude-ide-dragonball/install.sh` (macOS) or `install.ps1` (Windows).
 
 Never pass an agent name from inside an agent: `ide claude` starts a second agent in your pane.
