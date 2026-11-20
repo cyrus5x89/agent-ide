@@ -1,6 +1,6 @@
 # Claude IDE Dragonball
 
-An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTerm2 (macOS) and Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
+An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTerm2 on macOS: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
 
 [Tiếng Việt](README.vi.md)
 
@@ -18,22 +18,12 @@ An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTe
 
 ## Requirements
 
-| | iTerm2 + browser plugin | iTerm2 only | Terminal.app | Windows Terminal |
-|---|---|---|---|---|
-| Black theme + colours | ✓ | ✓ | ✓ | ✓ |
-| `ide <preset>` launches agents | ✓ | ✓ | ✓ | ✓ |
-| Dragon-ball model icon in the status line | ✓ | ✓ | ✓ | ✓ |
-| Colours follow effort (`ide-tint`) | ✓ | ✓ | – | – |
-| Claude + dragon balls watermark | ✓ | ✓ | – | – |
-| Preview pane (`ide`, `pv`) | ✓ | – | – | – |
-
-For the preview pane you need [iTerm2](https://iterm2.com) 3.6 or newer (`brew install --cask iterm2`) and its browser plugin: open any Browser-type profile and iTerm2 shows "Browser Plugin Missing" with a download button. Without the plugin `ide` still starts the agent, just without the preview. The installer always imports the theme into Terminal.app too, makes it the default there and applies it to open tabs (macOS asks once to allow controlling Terminal; importing opens one extra Terminal window you can close).
+macOS with [iTerm2](https://iterm2.com) (`brew install --cask iterm2`) and `uv`. The preview pane also needs iTerm2's browser plugin: open any Browser-type profile and iTerm2 shows "Browser Plugin Missing" with a download button; without it `ide` still starts the agent, just without the preview. Terminal.app and Windows are not supported.
 
 ## Install
 
 ```bash
-git clone https://github.com/cyrus5x89/claude-ide-dragonball && ./claude-ide-dragonball/install.sh   # macOS
-pwsh ./claude-ide-dragonball/install.ps1                                                  # Windows
+git clone https://github.com/cyrus5x89/claude-ide-dragonball && ./claude-ide-dragonball/install.sh
 ```
 
 Needs `uv` and the iTerm2 browser plugin (iTerm2 asks to install it the first time a browser pane opens); JetBrains Mono Nerd Font recommended. Claude Code plugin (skill only, no theme or `ide` command):
@@ -45,7 +35,7 @@ Needs `uv` and the iTerm2 browser plugin (iTerm2 asks to install it the first ti
 
 ## Preview pane (macOS)
 
-`ide` opens an iTerm2 browser pane on the right as a small file explorer for the current folder (folders first, breadcrumb, back with `..`). Videos, images and audio play inline with seeking, Markdown is rendered, code is highlighted, text is read as UTF-8, HTML and PDF open directly. It is served by `bin/pv-serve`, a tiny local server on 127.0.0.1 with a random token in every URL that shuts itself down after 8 idle hours. Point it elsewhere with `pv <file|url|folder>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), close it with `pvx`. Windows Terminal has no browser pane, so there `ide` only starts the agent.
+`ide` opens an iTerm2 browser pane on the right as a small file explorer for the current folder (folders first, breadcrumb, back with `..`). Videos, images and audio play inline with seeking, Markdown is rendered, code is highlighted, text is read as UTF-8, HTML and PDF open directly. It is served by `bin/pv-serve`, a tiny local server on 127.0.0.1 with a random token in every URL that shuts itself down after 8 idle hours. Point it elsewhere with `pv <file|url|folder>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), close it with `pvx`. 
 
 ## Presets
 

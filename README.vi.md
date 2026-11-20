@@ -1,6 +1,6 @@
 # Claude IDE Dragonball
 
-Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên iTerm2 (macOS) và Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
+Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên iTerm2 (macOS): Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
 
 [English](README.md)
 
@@ -18,22 +18,12 @@ Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên 
 
 ## Yêu cầu
 
-| | iTerm2 + plugin trình duyệt | Chỉ iTerm2 | Terminal.app | Windows Terminal |
-|---|---|---|---|---|
-| Theme đen + bảng màu | ✓ | ✓ | ✓ | ✓ |
-| `ide <preset>` chạy agent | ✓ | ✓ | ✓ | ✓ |
-| Icon ngọc rồng trên status line | ✓ | ✓ | ✓ | ✓ |
-| Màu theo effort (`ide-tint`) | ✓ | ✓ | – | – |
-| Hình mờ Claude + ngọc rồng | ✓ | ✓ | – | – |
-| Khung preview (`ide`, `pv`) | ✓ | – | – | – |
-
-Muốn có khung preview thì cần [iTerm2](https://iterm2.com) bản 3.6 trở lên (`brew install --cask iterm2`) và plugin trình duyệt của nó: mở 1 profile kiểu Browser, iTerm2 hiện "Browser Plugin Missing" kèm nút tải. Chưa có plugin thì `ide` vẫn chạy agent, chỉ không có preview. Bộ cài luôn nhập theme vào cả Terminal.app, đặt làm mặc định và áp luôn cho các tab đang mở (macOS hỏi 1 lần cho phép điều khiển Terminal; lúc nhập sẽ mở thêm 1 cửa sổ Terminal, đóng đi là được).
+macOS có [iTerm2](https://iterm2.com) (`brew install --cask iterm2`) và `uv`. Khung preview cần thêm plugin trình duyệt của iTerm2: mở 1 profile kiểu Browser, iTerm2 hiện "Browser Plugin Missing" kèm nút tải; chưa có thì `ide` vẫn chạy agent, chỉ không có preview. Không hỗ trợ Terminal.app và Windows.
 
 ## Cài
 
 ```bash
-git clone https://github.com/cyrus5x89/claude-ide-dragonball && ./claude-ide-dragonball/install.sh   # macOS
-pwsh ./claude-ide-dragonball/install.ps1                                                  # Windows
+git clone https://github.com/cyrus5x89/claude-ide-dragonball && ./claude-ide-dragonball/install.sh
 ```
 
 Cần `uv` và plugin trình duyệt của iTerm2 (lần đầu mở khung trình duyệt iTerm2 sẽ hỏi cài); nên có font JetBrains Mono Nerd. Plugin Claude Code (chỉ có skill, không có theme và lệnh `ide`):
@@ -45,7 +35,7 @@ Cần `uv` và plugin trình duyệt của iTerm2 (lần đầu mở khung trìn
 
 ## Khung preview (macOS)
 
-`ide` mở khung trình duyệt của iTerm2 bên phải thành một trình duyệt file nhỏ cho thư mục đang đứng (thư mục xếp trước, có đường dẫn để bấm quay lại, `..` để lên một cấp). Video, ảnh, nhạc phát ngay và tua được, Markdown hiện đẹp, code có tô màu, chữ tiếng Việt đọc đúng UTF-8, HTML và PDF mở thẳng. Phía sau là `bin/pv-serve`, một máy chủ nhỏ chỉ chạy trên 127.0.0.1, mỗi đường dẫn có mã ngẫu nhiên, không dùng 8 tiếng thì tự tắt. Đổi nội dung bằng `pv <file|url|thư mục>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), đóng bằng `pvx`. Windows Terminal không có khung trình duyệt nên ở đó `ide` chỉ chạy agent.
+`ide` mở khung trình duyệt của iTerm2 bên phải thành một trình duyệt file nhỏ cho thư mục đang đứng (thư mục xếp trước, có đường dẫn để bấm quay lại, `..` để lên một cấp). Video, ảnh, nhạc phát ngay và tua được, Markdown hiện đẹp, code có tô màu, chữ tiếng Việt đọc đúng UTF-8, HTML và PDF mở thẳng. Phía sau là `bin/pv-serve`, một máy chủ nhỏ chỉ chạy trên 127.0.0.1, mỗi đường dẫn có mã ngẫu nhiên, không dùng 8 tiếng thì tự tắt. Đổi nội dung bằng `pv <file|url|thư mục>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), đóng bằng `pvx`. 
 
 ## Lệnh có sẵn
 

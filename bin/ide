@@ -9,9 +9,8 @@
 #   │              │  iTerm2)    │   ide ccy / ide cxy / ide --help  (ide --help vi)
 #   └──────────────┴─────────────┘
 # Preview là khung trình duyệt của iTerm2 (bin/pv): danh sách file thư mục, bấm video/ảnh là phát.
-# Đổi nội dung bằng `pv <file|url|thư mục>`, đóng bằng `pvx`. Windows Terminal không có trình duyệt
-# trong khung nên chỉ chạy agent. Terminal.app hay iTerm2 chưa có plugin trình duyệt cũng vậy.
-import os, shlex, shutil, signal, subprocess, sys
+# Đổi nội dung bằng `pv <file|url|thư mục>`, đóng bằng `pvx`. Chỉ dành cho iTerm2 trên macOS.
+import os, shlex, signal, subprocess, sys
 
 # Thêm lệnh mới: tên gõ → (lệnh chạy, màu tab, giải thích EN, giải thích VN)
 C, X, G = "D97757", "10A37F", "4285F4"
@@ -79,7 +78,7 @@ def iterm():
     iterm2.run_until_complete(main)
 
 
-# khung preview cần iTerm2 + plugin trình duyệt của nó; terminal khác chỉ chạy agent (theme, status line vẫn dùng được)
+# khung preview cần plugin trình duyệt của iTerm2; chưa có thì vẫn chạy agent
 PLUGIN = [os.path.expanduser("~/Applications/iTermBrowserPlugin.app"), "/Applications/iTermBrowserPlugin.app"]
 preview = bool(os.environ.get("ITERM_SESSION_ID")) and any(map(os.path.exists, PLUGIN))
 pv = os.path.join(os.path.dirname(os.path.realpath(__file__)), "pv")
@@ -88,15 +87,12 @@ if preview:
 elif os.environ.get("ITERM_SESSION_ID"):
     print("ide: chưa có plugin trình duyệt của iTerm2 nên không mở preview "
           "(mở 1 profile kiểu Browser, iTerm2 sẽ hiện thông báo \"Browser Plugin Missing\" kèm nút tải)", file=sys.stderr)
-elif not name:
-    sys.exit("ide: khung preview chỉ có trong iTerm2 (cần plugin trình duyệt). Ở terminal này dùng `ide <agent>` để chạy agent.")
-if os.environ.get("ITERM_SESSION_ID"):
-    iterm()
+else:
+    sys.exit("ide: chỉ chạy trong iTerm2")
+iterm()
 
 if name:
     cmd = [*shlex.split(AGENTS[name][0]), *rest]
-    if os.name == "nt":
-        sys.exit(subprocess.run([shutil.which(cmd[0]) or cmd[0], *cmd[1:]]).returncode)
     # chạy agent như tiến trình con (không exec) để khi agent thoát thì đóng luôn khung preview
     signal.signal(signal.SIGINT, signal.SIG_IGN)  # Ctrl+C là của agent, ide chỉ chờ
     try:
