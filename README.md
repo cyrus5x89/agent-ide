@@ -67,21 +67,35 @@ Anything after the preset is passed to the agent, e.g. `ide ccy --model opus` or
 
 ## Effort colours + dragon balls (iTerm2)
 
-`ide-tint <effort>` retints the current iTerm2 pane for the Claude Code effort level and prints a dragon-ball icon (❶ one-star … ❼ seven-star) to use as the model icon in your status line. The background stays black; cursor, tab, selection, links and the yellow/blue/magenta/cyan code colours follow the level, red/green stay put so diffs still read.
+`ide-tint <effort>` retints the current iTerm2 pane for the Claude Code effort level and prints a dragon-ball icon (❶ one-star … ❼ seven-star) for the model to use as the model icon in your status line. The background stays black; cursor, tab, selection, links and the yellow/blue/magenta/cyan code colours follow the level, red/green stay put so diffs still read.
 
-| Effort | Ball | Accent |
+Stars on the ball = how smart the model is (Artificial Analysis Intelligence Index, [benchlm.ai](https://benchlm.ai/benchmarks/artificialanalysis), 19 Nov 2026). Unknown models fall back to the effort level (low ❶ … max ❺).
+
+| Ball | Index | Models |
 |---|---|---|
-| low | ❶ | gold `#F2C230` |
-| medium | ❷ | deep gold `#C98A0B` |
-| high | ❸ | bright gold `#FFD84D` |
-| xhigh | ❹ | crimson `#E0384F` |
-| max | ❺ | blue `#2FA8F0` |
-| ultracode | ❼ | silver `#D8DEE9` (your last prompt contains "ultracode") |
+| ❼ | ≥ 63 | Claude Fable 5.2 (64.6) |
+| ❻ | 60–63 | GPT-6.2 Astra (62.1), Gemini 4 Neon (61.4), Gemini 4 Carbon (60.0) |
+| ❺ | 57–60 | Claude Opus 5.5 (59.1), GPT-6.2 Sol (57.3) |
+| ❹ | 53–57 | GPT-6.1 Sol (54.6), Claude Sonnet 5.5 (54.5), Gemini 4 Hydrogen (53.9) |
+| ❸ | 48–53 | Gemini 4 Argon (50.4), Claude Fable 5 (49.6), Claude Fable 5.1 (49.2) |
+| ❷ | 40–48 | – |
+| ❶ | < 40 | Claude Haiku 5.5 (36.5) |
+
+The colour follows the effort level:
+
+| Effort | Accent |
+|---|---|
+| low | gold `#F2C230` |
+| medium | deep gold `#C98A0B` |
+| high | bright gold `#FFD84D` |
+| xhigh | crimson `#E0384F` |
+| max | blue `#2FA8F0` |
+| ultracode | silver `#D8DEE9` (your last prompt contains "ultracode") |
 
 Call it from your status line script with the effort from the status line JSON (`effort.level`) and the transcript path:
 
 ```python
-out = subprocess.run(["ide-tint", effort, "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
+out = subprocess.run(["ide-tint", effort, "--model", data["model"]["id"], "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
 ```
 
 It only talks to iTerm2 when the level changes.

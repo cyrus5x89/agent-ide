@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
-# ide-tint <effort> [--transcript PATH] : đổi màu nhấn của khung iTerm2 theo mức effort, in ra icon ngọc rồng 1-7 sao (❶-❼) cho status line
+# ide-tint <effort> [--model NAME] [--transcript PATH] [--with-level] : đổi màu nhấn của khung iTerm2 theo mức effort, in ra icon ngọc rồng 1-7 sao (❶-❼) cho status line
 #   effort: low | medium | high | xhigh | max (prompt có chữ "ultracode" → ultracode)
 #   Đổi: con trỏ, tab, vùng chọn, link, màu vàng/xanh/tím/lục lam (từ khoá, chuỗi trong code). Giữ nền đen, giữ đỏ/xanh lá cho diff.
 #   Chạy nhanh (chỉ stdlib); khi mức effort đổi mới gọi iTerm2 API ở tiến trình nền.
 # ide-tint --hook : dùng làm hook SessionStart / UserPromptSubmit của Codex (đọc JSON hook ở stdin, không in gì)
 import json, os, re, subprocess, sys
 
-# mức → (số ngọc, màu nhấn)
+# Số sao của ngọc = độ thông minh của model (Artificial Analysis Intelligence Index, benchlm.ai 19/11/2026):
+#   7 ≥63 · 6 60-63 · 5 57-60 · 4 53-57 · 3 48-53 · 2 40-48 · 1 <40. Model lạ → số sao theo effort.
+MODEL_STARS = {
+    "fable52": 7,                                    # 64.6
+    "gpt62astra": 6, "neon": 6, "carbon": 6,         # 62.1 · 61.4 · 60.0
+    "opus55": 5, "gpt62sol": 5,                      # 59.1 · 57.3
+    "gpt61sol": 4, "sonnet55": 4, "hydrogen": 4,     # 54.6 · 54.5 · 53.9
+    "argon": 3, "fable51": 3, "fable5": 3,           # 50.4 · 49.2 · 49.6
+    "haiku55": 1,                                    # 36.5
+}
+# mức effort → (số ngọc khi không biết model, màu nhấn)
 LEVELS = {
     "low": (1, "F2C230"), "medium": (2, "C98A0B"), "high": (3, "FFD84D"),
     "xhigh": (4, "E0384F"), "max": (5, "2FA8F0"), "ultracode": (7, "D8DEE9"),
@@ -69,9 +79,14 @@ def codex_effort(transcript):
     return {"minimal": "low", "none": "low"}.get(eff, eff)
 
 
-def balls(level):
+def model_stars(name):
+    key = re.sub(r"[^a-z0-9]", "", (name or "").lower())
+    return next((MODEL_STARS[k] for k in sorted(MODEL_STARS, key=len, reverse=True) if k in key), None)
+
+
+def balls(level, model=None):
     # ngọc rồng n sao: chữ số trong hình tròn đặc, tô cam
-    n, _ = LEVELS[level]
+    n = model_stars(model) or LEVELS[level][0]
     return f"\033[1;38;2;{';'.join(map(str, rgb(BALL)))}m{'❶❷❸❹❺❻❼'[n - 1]}\033[0m"
 
 
@@ -116,7 +131,8 @@ if __name__ == "__main__":
     if level not in LEVELS:
         sys.exit(0)
     if not hook:
-        print(balls(level), end="")
+        ball = balls(level, args[args.index("--model") + 1] if "--model" in args else None)
+        print(f"{level}\t{ball}" if "--with-level" in args else ball, end="")
     sid = os.environ.get("ITERM_SESSION_ID", "").split(":")[-1]
     if not sid:
         sys.exit(0)

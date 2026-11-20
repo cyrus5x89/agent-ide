@@ -67,21 +67,35 @@ Gõ thêm gì sau tên lệnh thì được chuyển thẳng cho agent, ví dụ
 
 ## Màu theo effort + ngọc rồng (iTerm2)
 
-`ide-tint <effort>` đổi màu khung iTerm2 đang đứng theo mức effort của Claude Code và in icon ngọc rồng (❶ 1 sao … ❼ 7 sao) làm icon model trên status line. Nền vẫn đen; con trỏ, tab, vùng chọn, link và các màu vàng/xanh/tím/lục lam trong code đổi theo cấp, đỏ/xanh lá giữ nguyên để diff vẫn đọc được.
+`ide-tint <effort>` đổi màu khung iTerm2 đang đứng theo mức effort của Claude Code và in icon ngọc rồng (❶ 1 sao … ❼ 7 sao) của model làm icon model trên status line. Nền vẫn đen; con trỏ, tab, vùng chọn, link và các màu vàng/xanh/tím/lục lam trong code đổi theo cấp, đỏ/xanh lá giữ nguyên để diff vẫn đọc được.
 
-| Effort | Ngọc | Màu nhấn |
+Số sao của ngọc = độ thông minh của model (Artificial Analysis Intelligence Index, [benchlm.ai](https://benchlm.ai/benchmarks/artificialanalysis), 19/11/2026). Model chưa có trong bảng thì lấy số sao theo effort (low ❶ … max ❺).
+
+| Ngọc | Điểm | Model |
 |---|---|---|
-| low | ❶ | vàng `#F2C230` |
-| medium | ❷ | vàng sẫm `#C98A0B` |
-| high | ❸ | vàng sáng `#FFD84D` |
-| xhigh | ❹ | đỏ `#E0384F` |
-| max | ❺ | xanh `#2FA8F0` |
-| ultracode | ❼ | bạc `#D8DEE9` (prompt gần nhất có chữ "ultracode") |
+| ❼ | ≥ 63 | Claude Fable 5.2 (64.6) |
+| ❻ | 60–63 | GPT-6.2 Astra (62.1), Gemini 4 Neon (61.4), Gemini 4 Carbon (60.0) |
+| ❺ | 57–60 | Claude Opus 5.5 (59.1), GPT-6.2 Sol (57.3) |
+| ❹ | 53–57 | GPT-6.1 Sol (54.6), Claude Sonnet 5.5 (54.5), Gemini 4 Hydrogen (53.9) |
+| ❸ | 48–53 | Gemini 4 Argon (50.4), Claude Fable 5 (49.6), Claude Fable 5.1 (49.2) |
+| ❷ | 40–48 | – |
+| ❶ | < 40 | Claude Haiku 5.5 (36.5) |
+
+Màu đi theo mức effort:
+
+| Effort | Màu nhấn |
+|---|---|
+| low | vàng `#F2C230` |
+| medium | vàng sẫm `#C98A0B` |
+| high | vàng sáng `#FFD84D` |
+| xhigh | đỏ `#E0384F` |
+| max | xanh `#2FA8F0` |
+| ultracode | bạc `#D8DEE9` (prompt gần nhất có chữ "ultracode") |
 
 Gọi từ script status line, truyền effort lấy từ JSON của status line (`effort.level`) và đường dẫn transcript:
 
 ```python
-out = subprocess.run(["ide-tint", effort, "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
+out = subprocess.run(["ide-tint", effort, "--model", data["model"]["id"], "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
 ```
 
 Nó chỉ gọi iTerm2 khi mức effort đổi.
