@@ -1,0 +1,89 @@
+#!/usr/bin/env -S uv run --quiet --python 3.14 --script
+# /// script
+# dependencies = ["iterm2; sys_platform == 'darwin'"]
+# ///
+# ide [agent] [args...] : chia tab kiểu IDE quanh khung đang đứng (iTerm2 / Windows Terminal)
+#   ┌──────────────┬──────┐
+#   │ agent (main) │ yazi │   ide            → chỉ thêm khung (gõ `! ide` trong Claude/Codex)
+#   ├──────────────┤      │   ide claude     → thêm khung rồi chạy claude ở khung chính
+#   │ shell        │      │   ide codex / ide agy / ide cx --resume ...
+#   └──────────────┴──────┘
+import os, shlex, shutil, subprocess, sys
+
+# Thêm lệnh mới: tên gõ → (lệnh chạy, màu tab)
+AGENTS = {
+    "claude": ("claude", "D97757"), "cc": ("claude", "D97757"),
+    "codex": ("codex", "10A37F"), "cx": ("codex", "10A37F"),
+    "agy": ("agy", "4285F4"),
+    "gemini": ("gemini", "4285F4"),
+    "opencode": ("opencode", "E5B567"),
+    "aider": ("aider", "7FB8B0"),
+    "copilot": ("copilot", "C792B8"),
+    "cursor": ("cursor-agent", "CFCAC3"),
+}
+SIDE = "yazi"    # cột phải (bỏ qua nếu chưa cài); "" = shell trống
+BOTTOM = ""      # khung dưới; ví dụ "git status"
+SIDE_W, BOTTOM_H = 0.28, 0.27
+
+name, rest = (sys.argv[1], sys.argv[2:]) if len(sys.argv) > 1 else ("", [])
+if name in ("-h", "--help"):
+    sys.exit(f"dùng: ide [{'|'.join(AGENTS)}] [tham số agent...]")
+if name and name not in AGENTS:
+    sys.exit(f"ide: không biết '{name}'. Có: {', '.join(AGENTS)}")
+side = SIDE if SIDE and shutil.which(SIDE) else ""
+color = AGENTS[name][1] if name else ("D97757" if os.environ.get("CLAUDECODE") else "")
+
+
+def iterm():
+    import iterm2
+    sid = os.environ["ITERM_SESSION_ID"].split(":")[-1]
+    cwd = shlex.quote(os.getcwd())
+
+    async def main(conn):
+        app = await iterm2.async_get_app(conn)
+        me = app.get_session_by_id(sid)
+        tab = me.tab
+        if len(tab.sessions) == 1:
+            full = me.grid_size
+            right = await me.async_split_pane(vertical=True)
+            bottom = await me.async_split_pane(vertical=False)
+            main_w = int(full.width * (1 - SIDE_W))
+            me.preferred_size = iterm2.Size(main_w, int(full.height * (1 - BOTTOM_H)))
+            bottom.preferred_size = iterm2.Size(main_w, int(full.height * BOTTOM_H))
+            right.preferred_size = iterm2.Size(full.width - main_w, full.height)
+            await tab.async_update_layout()
+            await right.async_send_text(f"cd {cwd} && clear{' && ' + side if side else ''}\n")
+            await bottom.async_send_text(f"cd {cwd} && clear{' && ' + BOTTOM if BOTTOM else ''}\n")
+        if color:
+            p = iterm2.LocalWriteOnlyProfile()
+            p.set_tab_color(iterm2.Color(*(int(color[i:i + 2], 16) for i in (0, 2, 4))))
+            p.set_use_tab_color(True)
+            for s in tab.sessions:
+                await s.async_set_profile_properties(p)
+        await me.async_activate()
+
+    iterm2.run_until_complete(main)
+
+
+def windows_terminal():
+    # shortcut: wt không biết tab đã chia chưa, gọi 2 lần sẽ chia thêm; không đổi màu tab được
+    cwd = os.getcwd()
+    right = [side] if side else []
+    bottom = shlex.split(BOTTOM) if BOTTOM else []
+    subprocess.run(["wt", "-w", "0", "sp", "-V", "-s", str(SIDE_W), "-d", cwd, *right, ";",
+                    "mf", "left", ";", "sp", "-H", "-s", str(BOTTOM_H), "-d", cwd, *bottom, ";",
+                    "mf", "up"], check=True)
+
+
+if os.environ.get("ITERM_SESSION_ID"):
+    iterm()
+elif os.environ.get("WT_SESSION"):
+    windows_terminal()
+else:
+    sys.exit("ide: chỉ chạy được trong iTerm2 hoặc Windows Terminal")
+
+if name:
+    cmd = AGENTS[name][0]
+    if os.name == "nt":
+        sys.exit(subprocess.run([shutil.which(cmd) or cmd, *rest]).returncode)
+    os.execvp(cmd, [cmd, *rest])

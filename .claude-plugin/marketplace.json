@@ -1,0 +1,5 @@
+{
+  "name": "agent-ide",
+  "owner": { "name": "cyrus5x89" },
+  "plugins": [{ "name": "agent-ide", "source": "./", "description": "IDE layout skill for the terminal" }]
+}

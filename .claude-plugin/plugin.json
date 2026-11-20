@@ -1,0 +1,6 @@
+{
+  "name": "agent-ide",
+  "description": "IDE layout + Claude-warm theme for iTerm2 and Windows Terminal, for Claude Code, Codex, agy and other CLI agents",
+  "version": "0.1.0",
+  "author": { "name": "cyrus5x89" }
+}
