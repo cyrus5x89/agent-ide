@@ -6,20 +6,42 @@
 #   ┌──────────────┬──────┐
 #   │ agent (main) │ yazi │   ide            → chỉ thêm khung (gõ `! ide` trong Claude/Codex)
 #   ├──────────────┤      │   ide claude     → thêm khung rồi chạy claude ở khung chính
-#   │ shell        │      │   ide codex / ide agy / ide cx --resume ...
+#   │ shell        │      │   ide ccy / ide cxy / ide --help  (ide --help vi)
 #   └──────────────┴──────┘
 import os, shlex, shutil, subprocess, sys
 
-# Thêm lệnh mới: tên gõ → (lệnh chạy, màu tab)
+# Thêm lệnh mới: tên gõ → (lệnh chạy, màu tab, giải thích EN, giải thích VN)
+C, X, G = "D97757", "10A37F", "4285F4"
 AGENTS = {
-    "claude": ("claude", "D97757"), "cc": ("claude", "D97757"),
-    "codex": ("codex", "10A37F"), "cx": ("codex", "10A37F"),
-    "agy": ("agy", "4285F4"),
-    "gemini": ("gemini", "4285F4"),
-    "opencode": ("opencode", "E5B567"),
-    "aider": ("aider", "7FB8B0"),
-    "copilot": ("copilot", "C792B8"),
-    "cursor": ("cursor-agent", "CFCAC3"),
+    "claude": ("claude", C, "Claude Code, asks before risky actions", "Claude Code, hỏi trước khi làm việc rủi ro"),
+    "cc": ("claude", C, "same as claude", "giống claude"),
+    "ccy": ("claude --dangerously-skip-permissions", C, "never asks; full trust, use in repos you can reset",
+            "không hỏi gì cả; chỉ dùng ở repo khôi phục được"),
+    "cca": ("claude --permission-mode auto", C, "auto mode: a classifier approves safe actions, asks on risky ones",
+            "tự duyệt việc an toàn, vẫn hỏi việc nguy hiểm"),
+    "cce": ("claude --permission-mode acceptEdits", C, "auto-accept file edits, still asks for shell commands",
+            "tự nhận sửa file, lệnh shell vẫn hỏi"),
+    "ccp": ("claude --permission-mode plan", C, "plan mode: reads and plans, changes nothing until you approve",
+            "chỉ đọc và lên kế hoạch, duyệt rồi mới sửa"),
+    "ccc": ("claude --continue", C, "continue the last conversation in this folder", "tiếp cuộc trò chuyện gần nhất ở thư mục này"),
+    "ccr": ("claude --resume", C, "pick an older conversation to resume", "chọn cuộc trò chuyện cũ để mở lại"),
+    "ccw": ("claude --worktree", C, "work in a fresh git worktree, your branch stays clean",
+            "làm trong git worktree mới, nhánh đang dùng không bị đụng"),
+    "codex": ("codex", X, "Codex CLI, default approvals", "Codex CLI, duyệt mặc định"),
+    "cx": ("codex", X, "same as codex", "giống codex"),
+    "cxa": ("codex --approve-for-me", X, "auto-review approvals inside the workspace sandbox",
+            "tự duyệt trong sandbox của thư mục làm việc"),
+    "cxy": ("codex --dangerously-bypass-approvals-and-sandbox", X, "no approvals and no sandbox; full trust",
+            "không hỏi, không sandbox; tin hoàn toàn"),
+    "cxr": ("codex resume --last", X, "continue the last Codex session", "tiếp phiên Codex gần nhất"),
+    "agy": ("agy", G, "Antigravity CLI", "Antigravity CLI"),
+    "agyy": ("agy --dangerously-skip-permissions", G, "Antigravity, auto-approve every tool", "Antigravity, tự duyệt mọi công cụ"),
+    "agyc": ("agy --continue", G, "continue the last Antigravity conversation", "tiếp cuộc trò chuyện agy gần nhất"),
+    "gemini": ("gemini", G, "Gemini CLI", "Gemini CLI"),
+    "opencode": ("opencode", "E5B567", "opencode", "opencode"),
+    "aider": ("aider", "7FB8B0", "aider", "aider"),
+    "copilot": ("copilot", "C792B8", "GitHub Copilot CLI", "GitHub Copilot CLI"),
+    "cursor": ("cursor-agent", "CFCAC3", "Cursor agent CLI", "Cursor agent CLI"),
 }
 SIDE = "yazi"    # cột phải (bỏ qua nếu chưa cài); "" = shell trống
 BOTTOM = ""      # khung dưới; ví dụ "git status"
@@ -27,7 +49,13 @@ SIDE_W, BOTTOM_H = 0.28, 0.27
 
 name, rest = (sys.argv[1], sys.argv[2:]) if len(sys.argv) > 1 else ("", [])
 if name in ("-h", "--help"):
-    sys.exit(f"dùng: ide [{'|'.join(AGENTS)}] [tham số agent...]")
+    vi = rest[:1] == ["vi"]
+    print("dùng: ide [lệnh] [tham số thêm...]   (ide --help = English)" if vi else
+          "usage: ide [preset] [extra args...]   (ide --help vi = tiếng Việt)")
+    print("  ide              " + ("chỉ chia khung quanh khung đang đứng" if vi else "split panes around the current pane only"))
+    for k, (cmd, _, en, vn) in AGENTS.items():
+        print(f"  ide {k:<9} {cmd:<48} {vn if vi else en}")
+    sys.exit(0)
 if name and name not in AGENTS:
     sys.exit(f"ide: không biết '{name}'. Có: {', '.join(AGENTS)}")
 side = SIDE if SIDE and shutil.which(SIDE) else ""
@@ -83,7 +111,7 @@ else:
     sys.exit("ide: chỉ chạy được trong iTerm2 hoặc Windows Terminal")
 
 if name:
-    cmd = AGENTS[name][0]
+    cmd = [*shlex.split(AGENTS[name][0]), *rest]
     if os.name == "nt":
-        sys.exit(subprocess.run([shutil.which(cmd) or cmd, *rest]).returncode)
-    os.execvp(cmd, [cmd, *rest])
+        sys.exit(subprocess.run([shutil.which(cmd[0]) or cmd[0], *cmd[1:]]).returncode)
+    os.execvp(cmd[0], cmd)
