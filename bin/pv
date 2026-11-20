@@ -6,6 +6,8 @@ DP="$HOME/Library/Application Support/iTerm2/DynamicProfiles/pv-pane.json"
 WIDTH=${PV_WIDTH:-0.4}
 ORIG=${ITERM_SESSION_ID#*:}
 [[ -z $ORIG ]] && { echo "pv: chỉ chạy được trong iTerm2"; exit 1; }
+[[ -d ~/Applications/iTermBrowserPlugin.app || -d /Applications/iTermBrowserPlugin.app ]] || {
+  echo "pv: cần plugin trình duyệt của iTerm2: mở 1 profile kiểu Browser, iTerm2 hiện \"Browser Plugin Missing\" kèm nút tải"; exit 1; }
 STATE="$HOME/.cache/pv-$ORIG"
 mkdir -p ~/.cache/pv
 

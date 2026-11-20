@@ -10,7 +10,7 @@
 #   └──────────────┴─────────────┘
 # Preview là khung trình duyệt của iTerm2 (bin/pv): danh sách file thư mục, bấm video/ảnh là phát.
 # Đổi nội dung bằng `pv <file|url|thư mục>`, đóng bằng `pvx`. Windows Terminal không có trình duyệt
-# trong khung nên chỉ chạy agent.
+# trong khung nên chỉ chạy agent. Terminal.app hay iTerm2 chưa có plugin trình duyệt cũng vậy.
 import os, shlex, shutil, signal, subprocess, sys
 
 # Thêm lệnh mới: tên gõ → (lệnh chạy, màu tab, giải thích EN, giải thích VN)
@@ -79,12 +79,19 @@ def iterm():
     iterm2.run_until_complete(main)
 
 
-if os.environ.get("ITERM_SESSION_ID"):
-    pv = os.path.join(os.path.dirname(os.path.realpath(__file__)), "pv")
+# khung preview cần iTerm2 + plugin trình duyệt của nó; terminal khác chỉ chạy agent (theme, status line vẫn dùng được)
+PLUGIN = [os.path.expanduser("~/Applications/iTermBrowserPlugin.app"), "/Applications/iTermBrowserPlugin.app"]
+preview = bool(os.environ.get("ITERM_SESSION_ID")) and any(map(os.path.exists, PLUGIN))
+pv = os.path.join(os.path.dirname(os.path.realpath(__file__)), "pv")
+if preview:
     subprocess.run([pv, "."], stdout=subprocess.DEVNULL)  # pv tự đóng preview cũ của khung này
+elif os.environ.get("ITERM_SESSION_ID"):
+    print("ide: chưa có plugin trình duyệt của iTerm2 nên không mở preview "
+          "(mở 1 profile kiểu Browser, iTerm2 sẽ hiện thông báo \"Browser Plugin Missing\" kèm nút tải)", file=sys.stderr)
+elif not name:
+    sys.exit("ide: khung preview chỉ có trong iTerm2 (cần plugin trình duyệt). Ở terminal này dùng `ide <agent>` để chạy agent.")
+if os.environ.get("ITERM_SESSION_ID"):
     iterm()
-elif not os.environ.get("WT_SESSION"):
-    sys.exit("ide: chỉ chạy được trong iTerm2 hoặc Windows Terminal")
 
 if name:
     cmd = [*shlex.split(AGENTS[name][0]), *rest]
@@ -97,6 +104,6 @@ if name:
     except FileNotFoundError:
         sys.exit(f"ide: chưa cài {cmd[0]}")
     finally:
-        if os.environ.get("ITERM_SESSION_ID"):
+        if preview:
             subprocess.run([pv, "-x"])
     sys.exit(code)

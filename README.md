@@ -16,6 +16,19 @@ An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTe
 - **`ide` command**: opens the preview pane, then starts the agent in the main pane. Plain `ide` only opens the preview, so inside a running agent type `! ide`. The tab takes the agent's colour (iTerm2).
 - **`ide` skill** for Claude Code, Codex and agy: say "give me the IDE layout" and the agent runs `ide` itself.
 
+## Requirements
+
+| | iTerm2 + browser plugin | iTerm2 only | Terminal.app | Windows Terminal |
+|---|---|---|---|---|
+| Black theme + colours | ✓ | ✓ | ✓ | ✓ |
+| `ide <preset>` launches agents | ✓ | ✓ | ✓ | ✓ |
+| Dragon-ball model icon in the status line | ✓ | ✓ | ✓ | ✓ |
+| Colours follow effort (`ide-tint`) | ✓ | ✓ | – | – |
+| Claude + dragon balls watermark | ✓ | ✓ | – | – |
+| Preview pane (`ide`, `pv`) | ✓ | – | – | – |
+
+For the preview pane you need [iTerm2](https://iterm2.com) 3.6 or newer (`brew install --cask iterm2`) and its browser plugin: open any Browser-type profile and iTerm2 shows "Browser Plugin Missing" with a download button. Without the plugin `ide` still starts the agent, just without the preview. On Terminal.app the installer imports the theme and makes it the default.
+
 ## Install
 
 ```bash

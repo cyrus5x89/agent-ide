@@ -16,6 +16,19 @@ Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên 
 - **Lệnh `ide`**: mở khung preview rồi chạy agent ở khung chính. Gõ `ide` không kèm gì thì chỉ mở preview, nên trong agent đang chạy gõ `! ide`. Tab đổi màu theo agent (iTerm2).
 - **Skill `ide`** cho Claude Code, Codex, agy: nói "chia khung IDE" là agent tự chạy `ide`.
 
+## Yêu cầu
+
+| | iTerm2 + plugin trình duyệt | Chỉ iTerm2 | Terminal.app | Windows Terminal |
+|---|---|---|---|---|
+| Theme đen + bảng màu | ✓ | ✓ | ✓ | ✓ |
+| `ide <preset>` chạy agent | ✓ | ✓ | ✓ | ✓ |
+| Icon ngọc rồng trên status line | ✓ | ✓ | ✓ | ✓ |
+| Màu theo effort (`ide-tint`) | ✓ | ✓ | – | – |
+| Hình mờ Claude + ngọc rồng | ✓ | ✓ | – | – |
+| Khung preview (`ide`, `pv`) | ✓ | – | – | – |
+
+Muốn có khung preview thì cần [iTerm2](https://iterm2.com) bản 3.6 trở lên (`brew install --cask iterm2`) và plugin trình duyệt của nó: mở 1 profile kiểu Browser, iTerm2 hiện "Browser Plugin Missing" kèm nút tải. Chưa có plugin thì `ide` vẫn chạy agent, chỉ không có preview. Dùng Terminal.app thì bộ cài nhập theme và đặt làm mặc định.
+
 ## Cài
 
 ```bash
