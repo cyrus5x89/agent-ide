@@ -14,8 +14,8 @@ if os.path.exists(sys.argv[2]):
     d["Profiles"][0].update(json.load(open(sys.argv[2])))
 json.dump(d, open(sys.argv[3], "w"), indent=1)
 PY
-ln -sf "$PWD/bin/ide" ~/.local/bin/ide
-chmod +x bin/ide
+for f in ide pv pvx; do ln -sf "$PWD/bin/$f" ~/.local/bin/$f; done
+chmod +x bin/ide bin/pv
 
 # đặt làm profile mặc định (cửa sổ do CC Switch mở cũng ăn theme) + làm mờ khung không focus
 for i in {1..30}; do
@@ -35,5 +35,4 @@ defaults write com.googlecode.iterm2 SplitPaneDimmingAmount -float 0.25
 if command -v npx >/dev/null; then
   npx --yes skills add "$PWD" --skill ide --agent claude-code codex antigravity-cli -g -y
 fi
-command -v yazi >/dev/null || echo "gợi ý: brew install yazi  (cột file bên phải)"
 echo "xong: mở tab mới rồi gõ  ide claude  (hoặc ! ide trong agent đang chạy)"

@@ -2,12 +2,26 @@
   "schemes": [
     {
       "name": "Claude IDE",
-      "background": "#1F1E1D", "foreground": "#E8E6E3",
-      "cursorColor": "#D97757", "selectionBackground": "#3A3532",
-      "black": "#2B2A28", "red": "#E06C5A", "green": "#9DB57A", "yellow": "#E5B567",
-      "blue": "#7AA2C9", "purple": "#C792B8", "cyan": "#7FB8B0", "white": "#CFCAC3",
-      "brightBlack": "#6B6660", "brightRed": "#F08A78", "brightGreen": "#B5CC92", "brightYellow": "#F0C987",
-      "brightBlue": "#96BAE0", "brightPurple": "#D9A9CC", "brightCyan": "#9ACCC4", "brightWhite": "#F5F3EF"
+      "background": "#0E0E0E",
+      "foreground": "#E8E6E3",
+      "cursorColor": "#D97757",
+      "selectionBackground": "#3A3532",
+      "black": "#2B2A28",
+      "red": "#E06C5A",
+      "green": "#9DB57A",
+      "yellow": "#E5B567",
+      "blue": "#7AA2C9",
+      "purple": "#C792B8",
+      "cyan": "#7FB8B0",
+      "white": "#CFCAC3",
+      "brightBlack": "#6B6660",
+      "brightRed": "#F08A78",
+      "brightGreen": "#B5CC92",
+      "brightYellow": "#F0C987",
+      "brightBlue": "#96BAE0",
+      "brightPurple": "#D9A9CC",
+      "brightCyan": "#9ACCC4",
+      "brightWhite": "#F5F3EF"
     }
   ],
   "profiles": [
@@ -18,12 +32,13 @@
       "startingDirectory": "%USERPROFILE%",
       "colorScheme": "Claude IDE",
       "tabColor": "#D97757",
-      "font": { "face": "JetBrainsMono Nerd Font Mono", "size": 13, "cellHeight": "1.12" },
+      "font": {
+        "face": "JetBrainsMono Nerd Font Mono",
+        "size": 13,
+        "cellHeight": "1.12"
+      },
       "padding": "14, 10",
-      "opacity": 92,
-      "useAcrylic": true,
-      "cursorShape": "bar",
-      "unfocusedAppearance": { "opacity": 85 }
+      "cursorShape": "bar"
     }
   ]
 }

@@ -25,5 +25,4 @@ if ($wt) {
 if (Get-Command npx -ErrorAction SilentlyContinue) {
   npx --yes skills add "$PSScriptRoot" --skill ide --agent claude-code codex antigravity-cli -g -y
 }
-if (-not (Get-Command yazi -ErrorAction SilentlyContinue)) { "gợi ý: winget install sxyazi.yazi  (cột file bên phải)" }
 "xong: mở tab Windows Terminal mới rồi gõ  ide claude"

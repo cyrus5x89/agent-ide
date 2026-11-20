@@ -1,24 +1,55 @@
 #!/bin/zsh
-# pv <file|url> : mở preview (web/video/ảnh/pdf/html) ở khung bên phải iTerm2
-# pvx           : đóng khung preview
+# pv <file|url|folder> : mở preview (web/video/ảnh/pdf/html, hoặc danh sách file của thư mục) ở khung bên phải iTerm2
+# pvx                  : đóng khung preview
 IT2=/Applications/iTerm.app/Contents/Resources/utilities/it2
 DP="$HOME/Library/Application Support/iTerm2/DynamicProfiles/pv-pane.json"
+WIDTH=${PV_WIDTH:-0.4}
 ORIG=${ITERM_SESSION_ID#*:}
 [[ -z $ORIG ]] && { echo "pv: chỉ chạy được trong iTerm2"; exit 1; }
 STATE="$HOME/.cache/pv-$ORIG"
+mkdir -p ~/.cache/pv
 
 close_prev() {
   [[ -f $STATE ]] || return
   local id=$(<$STATE)
   $IT2 session list 2>/dev/null | grep -q "^$id" && $IT2 session close --session "$id" --force >/dev/null 2>&1
   rm -f $STATE
+  sleep 0.3  # chờ khung chính nở lại rồi mới đo số cột
 }
 
 if [[ ${0:t} == pvx || $1 == -x ]]; then close_prev; exit 0; fi
-[[ -z $1 ]] && { echo "dùng: pv <file|url>   ·   pvx để đóng"; exit 1; }
+[[ -z $1 ]] && { echo "dùng: pv <file|url|thư mục>   ·   pvx để đóng"; exit 1; }
 
-t=$1; label=${t:t}
+STYLE='html,body{margin:0;height:100%;background:#0E0E0E;color:#8A847D;font:12px -apple-system,system-ui}'
+t=$1; label=${t:A:t}
 if [[ $t == (http|https|file)://* ]]; then url=$t
+elif [[ -d $t ]]; then
+  # thư mục: danh sách file, bấm video/ảnh/nhạc là phát ngay phía trên, html/pdf thì mở thẳng
+  python3 - "${t:A}" "$STYLE" > ~/.cache/pv/folder.html <<'PY'
+import html, json, os, sys, pathlib
+root, style = pathlib.Path(sys.argv[1]), sys.argv[2]
+skip = {".git", "node_modules", ".venv", "__pycache__", ".cache"}
+files = []
+for d, dirs, names in os.walk(root):
+    dirs[:] = sorted(x for x in dirs if x not in skip and not x.startswith("."))
+    if len(pathlib.Path(d).relative_to(root).parts) >= 3: dirs[:] = []
+    files += [pathlib.Path(d, n) for n in sorted(names) if not n.startswith(".")]
+    if len(files) > 600: break
+rows = "".join(f'<li data-u="{html.escape(p.as_uri())}">{html.escape(str(p.relative_to(root)))}</li>' for p in files[:600])
+print(f"""<!doctype html><meta charset=utf-8><title>{html.escape(root.name)}</title><style>{style}
+#v{{display:none;background:#000;text-align:center}}#v *{{max-width:100%;max-height:55vh}}
+h1{{font-size:12px;color:#D97757;margin:10px 12px}}ul{{list-style:none;margin:0;padding:0 0 20px}}
+li{{padding:3px 12px;color:#CFCAC3;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+li:hover,li.on{{background:#3A3532}}li.m{{color:#E8E6E3}}</style>
+<div id=v></div><h1>{html.escape(str(root))}</h1><ul>{rows}</ul><script>
+const V=/\\.(mp4|mov|m4v|webm)$/i,A=/\\.(mp3|wav|m4a|aac|flac|ogg)$/i,I=/\\.(png|jpe?g|gif|webp|svg|heic|avif|bmp)$/i,O=/\\.(html?|pdf|txt|md|json)$/i;
+for(const li of document.querySelectorAll('li')){{const u=li.dataset.u;if(V.test(u)||A.test(u)||I.test(u))li.classList.add('m');
+li.onclick=()=>{{if(O.test(u))return location=u;const v=document.getElementById('v');
+v.innerHTML=V.test(u)?`<video src="${{u}}" controls autoplay playsinline></video>`:A.test(u)?`<audio src="${{u}}" controls autoplay></audio>`:I.test(u)?`<img src="${{u}}">`:'';
+v.style.display=v.innerHTML?'block':'none';document.querySelector('.on')?.classList.remove('on');li.classList.add('on');}}}}
+</script>""")
+PY
+  url="file://$HOME/.cache/pv/folder.html?t=$(date +%s)"
 elif [[ -e $t ]]; then
   url=$(python3 -c 'import sys,pathlib;print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$t")
   ext=${${t:e}:l}; tag=""
@@ -28,10 +59,10 @@ elif [[ -e $t ]]; then
     png|jpg|jpeg|gif|webp|svg|heic|avif|bmp) tag="<img src=\"$url\">";;
   esac
   if [[ -n $tag ]]; then
-    mkdir -p ~/.cache/pv
+    # WebKit không mở thẳng .mp4 được nên bọc trong trang html
     cat > ~/.cache/pv/view.html <<HTML
 <!doctype html><meta charset=utf-8><title>${label}</title>
-<style>html,body{margin:0;height:100%;background:#11111b;color:#6c7086;font:12px -apple-system,system-ui}
+<style>${STYLE}
 body{display:grid;grid-template-rows:1fr auto;place-items:center}
 video,img{max-width:100%;max-height:calc(100vh - 28px);object-fit:contain}audio{width:80%}
 p{margin:6px}</style>${tag}<p>${label}</p>
@@ -47,18 +78,34 @@ name="PV $(date +%s%N)"
 python3 - "$DP" "$name" "$url" <<'PY'
 import json,sys
 p={"Name":sys.argv[2],"Guid":"pv-pane-0001","Custom Command":"Browser","Initial URL":sys.argv[3],
-   "Background Color":{"Red Component":0.118,"Green Component":0.118,"Blue Component":0.18,"Color Space":"sRGB"}}
+   "Background Color":{"Red Component":0.055,"Green Component":0.055,"Blue Component":0.055,"Color Space":"sRGB"}}
 json.dump({"Profiles":[p]},open(sys.argv[1],"w"))
 PY
 # chờ iTerm2 nạp lại profile
 for i in {1..30}; do $IT2 profile list 2>/dev/null | grep -qF "$name" && break; sleep 0.1; done
 
+cols=$($IT2 session list 2>/dev/null | awk -F'\t' -v id="$ORIG" '$1==id{split($4,a,"x");print a[1]}')
 before=$($IT2 session list 2>/dev/null | cut -f1)
 $IT2 session split --vertical --session "$ORIG" --profile "$name" >/dev/null 2>&1
 for i in {1..20}; do
   new=$($IT2 session list 2>/dev/null | cut -f1 | grep -vxF -f <(print -l $before) | head -1)
   [[ -n $new ]] && break; sleep 0.1
 done
-[[ -n $new ]] && { print -r -- $new > $STATE; $IT2 session set-name "◧ $label" --session "$new" >/dev/null 2>&1; }
+if [[ -n $new ]]; then
+  print -r -- $new > $STATE
+  $IT2 session set-name "◧ $label" --session "$new" >/dev/null 2>&1
+  # split mặc định chia đôi; thu khung preview về WIDTH
+  [[ -n $cols ]] && uv run --quiet --python 3.14 --with iterm2 python - "$ORIG" "$new" "$WIDTH" "$cols" <<'PY' 2>/dev/null
+import sys, iterm2
+async def main(c):
+    app = await iterm2.async_get_app(c)
+    a = app.get_session_by_id(sys.argv[1])
+    w = int(sys.argv[4])  # số cột trước khi chia; khung trình duyệt không báo cột chuẩn
+    pw = int(w * float(sys.argv[3]))
+    a.preferred_size = iterm2.Size(w - pw, a.grid_size.height)  # khung trình duyệt tự lấy phần còn lại
+    await a.tab.async_update_layout()
+iterm2.run_until_complete(main)
+PY
+fi
 $IT2 session focus "$ORIG" >/dev/null 2>&1
 echo "▸ $url"

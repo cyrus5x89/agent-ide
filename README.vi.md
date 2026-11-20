@@ -1,19 +1,19 @@
 # agent-ide
 
-Bố cục kiểu IDE và theme Claude tông ấm cho các CLI agent trên iTerm2 (macOS) và Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
+Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên iTerm2 (macOS) và Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
 
 [English](README.md)
 
 ```
-┌──────────────┬──────┐
-│ agent        │ yazi │
-├──────────────┤      │
-│ shell        │      │
-└──────────────┴──────┘
+┌──────────────┬──────────────┐
+│ agent        │ preview      │
+│              │ (iTerm2      │
+│              │  browser)    │
+└──────────────┴──────────────┘
 ```
 
-- **Theme Claude IDE**: nền đen ấm `#1F1E1D`, cam Claude `#D97757`, font JetBrains Mono Nerd, nền mờ nhẹ, khung không dùng thì tối đi. Đặt làm profile mặc định nên cửa sổ do CC Switch hay app khác mở cũng có theme.
-- **Lệnh `ide`**: chia tab đang đứng rồi chạy agent ở khung chính. Gõ `ide` không kèm gì thì chỉ chia khung, nên trong agent đang chạy gõ `! ide`. Tab đổi màu theo agent (iTerm2).
+- **Theme Claude IDE**: nền đen `#0E0E0E`, cam Claude `#D97757`, font JetBrains Mono Nerd, nền đặc, khung không dùng thì tối đi. Đặt làm profile mặc định nên cửa sổ do CC Switch hay app khác mở cũng có theme.
+- **Lệnh `ide`**: mở khung preview rồi chạy agent ở khung chính. Gõ `ide` không kèm gì thì chỉ mở preview, nên trong agent đang chạy gõ `! ide`. Tab đổi màu theo agent (iTerm2).
 - **Skill `ide`** cho Claude Code, Codex, agy: nói "chia khung IDE" là agent tự chạy `ide`.
 
 ## Cài
@@ -23,12 +23,16 @@ git clone https://github.com/cyrus5x89/agent-ide && ./agent-ide/install.sh   # m
 pwsh ./agent-ide/install.ps1                                                  # Windows
 ```
 
-Cần `uv`; nên có `yazi` và font JetBrains Mono Nerd. Plugin Claude Code (chỉ có skill, không có theme và lệnh `ide`):
+Cần `uv` và plugin trình duyệt của iTerm2 (lần đầu mở khung trình duyệt iTerm2 sẽ hỏi cài); nên có font JetBrains Mono Nerd. Plugin Claude Code (chỉ có skill, không có theme và lệnh `ide`):
 
 ```
 /plugin marketplace add cyrus5x89/agent-ide
 /plugin install agent-ide@agent-ide
 ```
+
+## Khung preview (macOS)
+
+`ide` mở khung trình duyệt của iTerm2 bên phải, liệt kê file trong thư mục đang đứng (sâu 3 cấp). Bấm video, ảnh, nhạc là phát ngay phía trên; HTML, PDF, Markdown, JSON thì mở thẳng. Đổi nội dung bằng `pv <file|url|thư mục>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), đóng bằng `pvx`. Windows Terminal không có khung trình duyệt nên ở đó `ide` chỉ chạy agent.
 
 ## Lệnh có sẵn
 
@@ -63,4 +67,4 @@ Gõ thêm gì sau tên lệnh thì được chuyển thẳng cho agent, ví dụ
 
 ## Tuỳ chỉnh
 
-Sửa bảng `AGENTS` đầu file `bin/ide`: `tên: (lệnh, màu tab, ghi chú tiếng Anh, ghi chú tiếng Việt)`. `SIDE` và `BOTTOM` là lệnh chạy ở cột phải và khung dưới.
+Sửa bảng `AGENTS` đầu file `bin/ide`: `tên: (lệnh, màu tab, ghi chú tiếng Anh, ghi chú tiếng Việt)`. `PV_WIDTH=0.5 ide` đổi độ rộng khung preview (mặc định 0.4).

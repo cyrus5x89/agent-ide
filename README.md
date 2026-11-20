@@ -1,19 +1,19 @@
 # agent-ide
 
-An IDE-style layout and a warm Claude theme for CLI coding agents in iTerm2 (macOS) and Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
+An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTerm2 (macOS) and Windows Terminal: Claude Code, Codex, Antigravity (agy), Gemini, opencode, aider, Copilot, Cursor.
 
 [Tiếng Việt](README.vi.md)
 
 ```
-┌──────────────┬──────┐
-│ agent        │ yazi │
-├──────────────┤      │
-│ shell        │      │
-└──────────────┴──────┘
+┌──────────────┬──────────────┐
+│ agent        │ preview      │
+│              │ (iTerm2      │
+│              │  browser)    │
+└──────────────┴──────────────┘
 ```
 
-- **Claude IDE theme**: warm near-black `#1F1E1D`, Claude orange `#D97757`, JetBrains Mono Nerd Font, light blur, unfocused panes dimmed. Set as the default profile, so windows opened by other launchers (CC Switch, etc.) get it too.
-- **`ide` command**: splits the current tab, then starts the agent in the main pane. Plain `ide` only splits, so inside a running agent type `! ide`. The tab takes the agent's colour (iTerm2).
+- **Claude IDE theme**: black `#0E0E0E`, Claude orange `#D97757`, JetBrains Mono Nerd Font, solid background, unfocused panes dimmed. Set as the default profile, so windows opened by other launchers (CC Switch, etc.) get it too.
+- **`ide` command**: opens the preview pane, then starts the agent in the main pane. Plain `ide` only opens the preview, so inside a running agent type `! ide`. The tab takes the agent's colour (iTerm2).
 - **`ide` skill** for Claude Code, Codex and agy: say "give me the IDE layout" and the agent runs `ide` itself.
 
 ## Install
@@ -23,12 +23,16 @@ git clone https://github.com/cyrus5x89/agent-ide && ./agent-ide/install.sh   # m
 pwsh ./agent-ide/install.ps1                                                  # Windows
 ```
 
-Needs `uv`; `yazi` and JetBrains Mono Nerd Font recommended. Claude Code plugin (skill only, no theme or `ide` command):
+Needs `uv` and the iTerm2 browser plugin (iTerm2 asks to install it the first time a browser pane opens); JetBrains Mono Nerd Font recommended. Claude Code plugin (skill only, no theme or `ide` command):
 
 ```
 /plugin marketplace add cyrus5x89/agent-ide
 /plugin install agent-ide@agent-ide
 ```
+
+## Preview pane (macOS)
+
+`ide` opens an iTerm2 browser pane on the right with the files of the current folder (3 levels deep). Click a video, image or audio file to play it on top; HTML, PDF, Markdown and JSON open directly. Point it elsewhere with `pv <file|url|folder>` (`pv localhost:3000`, `pv render.mp4`, `pv github.com`), close it with `pvx`. Windows Terminal has no browser pane, so there `ide` only starts the agent.
 
 ## Presets
 
@@ -63,4 +67,4 @@ Anything after the preset is passed to the agent, e.g. `ide ccy --model opus` or
 
 ## Customise
 
-Edit the `AGENTS` table at the top of `bin/ide`: `name: (command, tab colour, English note, Vietnamese note)`. `SIDE` and `BOTTOM` set what runs in the right column and the bottom pane.
+Edit the `AGENTS` table at the top of `bin/ide`: `name: (command, tab colour, English note, Vietnamese note)`. `PV_WIDTH=0.5 ide` changes the preview width (default 0.4).
