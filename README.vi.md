@@ -118,6 +118,8 @@ Claude, Codex và agy biến hình, từ dạng gốc rồi low → ultracode (`
 
 ![Claude, Codex, agy: base, low, medium, high, xhigh, max, ultracode](art/saiyan/mascots.png)
 
+Khi `ide-tint` chạy, mascot mờ ở góc dưới phải đổi theo agent và mức effort (`art/saiyan/wm/`, tạo bằng `art/saiyan/watermarks.py`). Codex đổi qua hook, Claude Code qua status line, agy qua status line với `--agent agy`. Logo pixel mỗi CLI in lúc khởi động là của chính CLI, không đổi được.
+
 Tạo lại: `art/saiyan/gen.sh [cấp...]` (cần lệnh `studio image`), rồi `uv run --python 3.12 --with vtracer --with pillow python art/saiyan/vectorize.py`.
 
 ## Tuỳ chỉnh

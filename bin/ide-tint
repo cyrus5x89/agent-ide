@@ -90,9 +90,10 @@ def balls(level, model=None):
     return f"\033[1;38;2;{';'.join(map(str, rgb(BALL)))}m{'❶❷❸❹❺❻❼'[n - 1]}\033[0m"
 
 
-def apply(level, sid):
+def apply(level, sid, agent="claude"):
     import iterm2
     _, accent = LEVELS[level]
+    wm = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "art", "saiyan", "wm", f"{agent}-{level}.png")
 
     async def main(conn):
         app = await iterm2.async_get_app(conn)
@@ -108,6 +109,8 @@ def apply(level, sid):
         p.set_use_tab_color(True)
         for slot, base in BASE.items():
             getattr(p, f"set_ansi_{slot}_color")(c(mix(base, accent, 0.6)))
+        if os.path.exists(wm):  # mascot của agent ở mức effort này làm hình mờ góc dưới phải
+            p.set_background_image_location(os.path.realpath(wm))
         await s.async_set_profile_properties(p)
 
     iterm2.run_until_complete(main)
@@ -115,7 +118,7 @@ def apply(level, sid):
 
 if __name__ == "__main__":
     if sys.argv[1:2] == ["--apply"]:
-        apply(sys.argv[2], sys.argv[3])
+        apply(*sys.argv[2:5])
         sys.exit(0)
     args = sys.argv[1:]
     hook = args[:1] == ["--hook"]
@@ -130,6 +133,7 @@ if __name__ == "__main__":
             level = "ultracode"
     if level not in LEVELS:
         sys.exit(0)
+    agent = "codex" if hook else args[args.index("--agent") + 1] if "--agent" in args else "claude"
     if not hook:
         ball = balls(level, args[args.index("--model") + 1] if "--model" in args else None)
         print(f"{level}\t{ball}" if "--with-level" in args else ball, end="")
@@ -139,12 +143,12 @@ if __name__ == "__main__":
     cache = os.path.expanduser(f"~/.cache/ide-tint/{sid}")
     try:
         with open(cache) as fh:
-            if fh.read() == level:
+            if fh.read() == f"{agent}:{level}":
                 sys.exit(0)
     except OSError:
         pass
     os.makedirs(os.path.dirname(cache), exist_ok=True)
     with open(cache, "w") as fh:
-        fh.write(level)
+        fh.write(f"{agent}:{level}")
     subprocess.Popen(["uv", "run", "--quiet", "--python", "3.14", "--with", "iterm2", "python", os.path.realpath(__file__),
-                      "--apply", level, sid], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+                      "--apply", level, sid, agent], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)

@@ -118,6 +118,8 @@ Claude, Codex and agy powering up, base then low → ultracode (`art/saiyan/web/
 
 ![Claude, Codex, agy: base, low, medium, high, xhigh, max, ultracode](art/saiyan/mascots.png)
 
+When `ide-tint` runs, the faint mascot in the bottom-right corner follows the agent and the effort level (`art/saiyan/wm/`, made by `art/saiyan/watermarks.py`). Codex sets it from its hook, Claude Code from its status line, agy from its status line with `--agent agy`. The pixel logo each CLI prints at start-up is built into the CLI and cannot be changed.
+
 Regenerate: `art/saiyan/gen.sh [level...]` (needs the `studio image` CLI), then `uv run --python 3.12 --with vtracer --with pillow python art/saiyan/vectorize.py`.
 
 ## Customise
