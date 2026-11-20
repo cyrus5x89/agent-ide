@@ -27,7 +27,7 @@ Bố cục kiểu IDE và theme đen nhấn cam Claude cho các CLI agent trên 
 | Hình mờ Claude + ngọc rồng | ✓ | ✓ | – | – |
 | Khung preview (`ide`, `pv`) | ✓ | – | – | – |
 
-Muốn có khung preview thì cần [iTerm2](https://iterm2.com) bản 3.6 trở lên (`brew install --cask iterm2`) và plugin trình duyệt của nó: mở 1 profile kiểu Browser, iTerm2 hiện "Browser Plugin Missing" kèm nút tải. Chưa có plugin thì `ide` vẫn chạy agent, chỉ không có preview. Dùng Terminal.app thì bộ cài nhập theme và đặt làm mặc định.
+Muốn có khung preview thì cần [iTerm2](https://iterm2.com) bản 3.6 trở lên (`brew install --cask iterm2`) và plugin trình duyệt của nó: mở 1 profile kiểu Browser, iTerm2 hiện "Browser Plugin Missing" kèm nút tải. Chưa có plugin thì `ide` vẫn chạy agent, chỉ không có preview. Bộ cài luôn nhập theme vào cả Terminal.app, đặt làm mặc định và áp luôn cho các tab đang mở (macOS hỏi 1 lần cho phép điều khiển Terminal; lúc nhập sẽ mở thêm 1 cửa sổ Terminal, đóng đi là được).
 
 ## Cài
 

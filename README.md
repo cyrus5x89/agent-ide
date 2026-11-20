@@ -27,7 +27,7 @@ An IDE-style layout and a black Claude-orange theme for CLI coding agents in iTe
 | Claude + dragon balls watermark | ✓ | ✓ | – | – |
 | Preview pane (`ide`, `pv`) | ✓ | – | – | – |
 
-For the preview pane you need [iTerm2](https://iterm2.com) 3.6 or newer (`brew install --cask iterm2`) and its browser plugin: open any Browser-type profile and iTerm2 shows "Browser Plugin Missing" with a download button. Without the plugin `ide` still starts the agent, just without the preview. On Terminal.app the installer imports the theme and makes it the default.
+For the preview pane you need [iTerm2](https://iterm2.com) 3.6 or newer (`brew install --cask iterm2`) and its browser plugin: open any Browser-type profile and iTerm2 shows "Browser Plugin Missing" with a download button. Without the plugin `ide` still starts the agent, just without the preview. The installer always imports the theme into Terminal.app too, makes it the default there and applies it to open tabs (macOS asks once to allow controlling Terminal; importing opens one extra Terminal window you can close).
 
 ## Install
 

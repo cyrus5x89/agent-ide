@@ -44,14 +44,27 @@ defaults write com.googlecode.iterm2 SplitPaneDimmingAmount -float 0.25
 muốn có khung preview: cài plugin trình duyệt của iTerm2. Mở 1 profile kiểu Browser trong iTerm2,
 iTerm2 hiện 'Browser Plugin Missing' kèm nút tải. Chưa cài thì ide vẫn chạy agent, chỉ không có preview."
 else
-  # Terminal.app: nhập theme và đặt làm mặc định
-  open "themes/terminal/Claude IDE Dragonball.terminal"
-  defaults write com.apple.Terminal "Default Window Settings" -string "Claude IDE Dragonball"
-  defaults write com.apple.Terminal "Startup Window Settings" -string "Claude IDE Dragonball"
   echo "
-Terminal.app: đã cài theme Claude IDE Dragonball. Khung preview, màu theo effort và hình mờ cần iTerm2:
-  brew install --cask iterm2   rồi chạy lại ./install.sh"
+Chưa có iTerm2: khung preview, màu theo effort và hình mờ cần iTerm2 (brew install --cask iterm2, rồi chạy lại ./install.sh)."
 fi
+
+# Terminal.app (có sẵn trên mọi máy Mac): nhập theme, đặt mặc định và áp luôn cho các tab đang mở
+open -g "themes/terminal/Claude IDE Dragonball.terminal"
+for i in {1..20}; do
+  osascript -e 'tell application "Terminal" to exists settings set "Claude IDE Dragonball"' 2>/dev/null | grep -q true && break; sleep 0.3
+done
+osascript <<'OSA' >/dev/null || echo "chưa áp được theme cho Terminal.app: cho phép điều khiển Terminal trong System Settings › Privacy & Security › Automation rồi chạy lại"
+tell application "Terminal"
+  set s to settings set "Claude IDE Dragonball"
+  set default settings to s
+  set startup settings to s
+  repeat with w in windows
+    repeat with t in tabs of w
+      set current settings of t to s
+    end repeat
+  end repeat
+end tell
+OSA
 
 if command -v npx >/dev/null; then
   npx --yes skills add "$PWD" --skill ide --agent claude-code codex antigravity-cli -g -y
