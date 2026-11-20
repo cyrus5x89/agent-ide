@@ -1,25 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- agy: đầu vòm (đỉnh chữ A của icon Antigravity), thân + hai chân tạo thành vòm, kính mặt tối, lơ lửng trên vòng phản trọng lực -->
   <defs>
-    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#F2B233"/><stop offset=".22" stop-color="#E8553E"/>
-      <stop offset=".48" stop-color="#4285F4"/><stop offset="1" stop-color="#2F62D8"/>
+    <linearGradient id="head" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2B233"/><stop offset=".55" stop-color="#E8553E"/><stop offset="1" stop-color="#D9485F"/>
     </linearGradient>
-    <linearGradient id="hl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7BC96F"/><stop offset="1" stop-color="#7BC96F" stop-opacity="0"/></linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5B8FF7"/><stop offset="1" stop-color="#2F62D8"/>
+    </linearGradient>
   </defs>
   <rect width="400" height="400" fill="#0E0E0E"/>
-  <!-- vòng phản trọng lực dưới chân -->
-  <ellipse cx="200" cy="352" rx="92" ry="14" fill="none" stroke="#7FD3FF" stroke-width="5" opacity=".8"/>
-  <ellipse cx="200" cy="352" rx="60" ry="8" fill="none" stroke="#7FD3FF" stroke-width="3" opacity=".45"/>
-  <!-- tay ngắn, vẽ trước để thân đè lên chỗ nối -->
-  <rect x="86" y="212" width="54" height="24" rx="12" fill="#4285F4" stroke="#000" stroke-width="6"/>
-  <rect x="260" y="212" width="54" height="24" rx="12" fill="#4285F4" stroke="#000" stroke-width="6"/>
-  <!-- thân hình vòm chữ A, hai đầu vòm là chân -->
-  <path d="M110 318 C110 190 140 82 200 82 C260 82 290 190 290 318 L246 318 C246 240 232 200 200 200 C168 200 154 240 154 318 Z"
-        fill="url(#body)" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
-  <!-- kính mặt tối, mắt phát sáng -->
-  <rect x="152" y="118" width="96" height="50" rx="18" fill="#141A33" stroke="#111" stroke-width="6"/>
-  <rect x="172" y="134" width="16" height="18" rx="5" fill="#BFF3FF"/>
-  <rect x="212" y="134" width="16" height="18" rx="5" fill="#BFF3FF"/>
-  <!-- sao Gemini 4 cánh trên ngực -->
-  <path d="M200 178 C203 190 206 193 218 196 C206 199 203 202 200 214 C197 202 194 199 182 196 C194 193 197 190 200 178 Z" fill="#FFFFFF"/>
+  <ellipse cx="200" cy="356" rx="84" ry="13" fill="none" stroke="#7FD3FF" stroke-width="5" opacity=".8"/>
+  <ellipse cx="200" cy="356" rx="54" ry="7" fill="none" stroke="#7FD3FF" stroke-width="3" opacity=".45"/>
+  <g stroke="#000" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tay: vai tròn, cẳng tay buông, nắm tay tròn -->
+    <path d="M150 214 C128 220 118 240 116 262" fill="none" stroke="#000" stroke-width="22"/>
+    <path d="M150 214 C128 220 118 240 116 262" fill="none" stroke="#4A7DF0" stroke-width="12"/>
+    <circle cx="116" cy="268" r="13" fill="#4A7DF0"/>
+    <path d="M250 214 C272 220 282 240 284 262" fill="none" stroke="#000" stroke-width="22"/>
+    <path d="M250 214 C272 220 282 240 284 262" fill="none" stroke="#4A7DF0" stroke-width="12"/>
+    <circle cx="284" cy="268" r="13" fill="#4A7DF0"/>
+    <!-- thân + hai chân: một vòm, khe giữa hai chân -->
+    <path d="M152 206 L248 206 C256 250 262 290 262 318 L222 318 C220 296 214 282 200 282 C186 282 180 296 178 318 L138 318 C138 290 144 250 152 206 Z" fill="url(#body)"/>
+    <!-- bàn chân -->
+    <rect x="132" y="314" width="50" height="16" rx="8" fill="#2A55C4"/>
+    <rect x="218" y="314" width="50" height="16" rx="8" fill="#2A55C4"/>
+    <!-- cổ -->
+    <rect x="186" y="196" width="28" height="16" rx="6" fill="#2A55C4"/>
+    <!-- đầu vòm -->
+    <path d="M128 196 C128 120 158 70 200 70 C242 70 272 120 272 196 Z" fill="url(#head)"/>
+    <!-- kính mặt + mắt -->
+    <rect x="146" y="124" width="108" height="52" rx="20" fill="#141A33"/>
+  </g>
+  <rect x="170" y="138" width="16" height="20" rx="5" fill="#BFF3FF"/>
+  <rect x="214" y="138" width="16" height="20" rx="5" fill="#BFF3FF"/>
+  <!-- sao Gemini nhỏ làm khuyên tai bên trái đầu -->
+  <path d="M136 150 C137.5 156 139 157.5 145 159 C139 160.5 137.5 162 136 168 C134.5 162 133 160.5 127 159 C133 157.5 134.5 156 136 150 Z" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
 </svg>

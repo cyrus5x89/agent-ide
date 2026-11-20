@@ -29,10 +29,10 @@ CHAR = {
               "Personality: the proud elite rival. Arms crossed, chin up, smug confident smirk. Hair always rises straight up like "
               "one tall flame with a sharp V-shaped widow's peak at the forehead."),
     "agy": ("agy (Antigravity)", "kiểu Broly: khổng lồ, cơ bắp cuồn cuộn, tóc dài hoang dã, hào quang ánh xanh lá",
-            "the agy mascot in Image 1: a tall rounded arch-shaped body like a smooth letter A without the crossbar (the two ends "
-            "are its legs), a gradient from golden yellow and coral red on top into Google blue #4285F4 down the legs, a dark navy "
-            "visor across the head with two glowing pale-cyan eyes, a white four-pointed sparkle on the chest, short arms, and a "
-            "glowing cyan anti-gravity ring hovering under its feet",
+            "the agy mascot in Image 1: a small humanoid robot with a tall rounded dome head (the top of a letter A) in a golden "
+            "yellow to coral red gradient, a dark navy visor with two glowing pale-cyan eyes, a short neck, a Google-blue (#4285F4) "
+            "body whose two legs form an arch, rounded arms with ball hands, a tiny white four-pointed sparkle stud on the side of "
+            "the head like an earring, and a glowing cyan anti-gravity ring hovering under its feet",
             "Personality: the legendary berserker. Hulking and towering, wild untamed spiky hair that sweeps back and outward, "
             "a gold ring around its neck and gold armbands, a faint lime-green tint at the edge of every aura, roaring with power."),
 }
