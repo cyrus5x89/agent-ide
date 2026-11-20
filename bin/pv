@@ -1,0 +1,64 @@
+#!/bin/zsh
+# pv <file|url> : mở preview (web/video/ảnh/pdf/html) ở khung bên phải iTerm2
+# pvx           : đóng khung preview
+IT2=/Applications/iTerm.app/Contents/Resources/utilities/it2
+DP="$HOME/Library/Application Support/iTerm2/DynamicProfiles/pv-pane.json"
+ORIG=${ITERM_SESSION_ID#*:}
+[[ -z $ORIG ]] && { echo "pv: chỉ chạy được trong iTerm2"; exit 1; }
+STATE="$HOME/.cache/pv-$ORIG"
+
+close_prev() {
+  [[ -f $STATE ]] || return
+  local id=$(<$STATE)
+  $IT2 session list 2>/dev/null | grep -q "^$id" && $IT2 session close --session "$id" --force >/dev/null 2>&1
+  rm -f $STATE
+}
+
+if [[ ${0:t} == pvx || $1 == -x ]]; then close_prev; exit 0; fi
+[[ -z $1 ]] && { echo "dùng: pv <file|url>   ·   pvx để đóng"; exit 1; }
+
+t=$1; label=${t:t}
+if [[ $t == (http|https|file)://* ]]; then url=$t
+elif [[ -e $t ]]; then
+  url=$(python3 -c 'import sys,pathlib;print(pathlib.Path(sys.argv[1]).resolve().as_uri())' "$t")
+  ext=${${t:e}:l}; tag=""
+  case $ext in
+    mp4|mov|m4v|webm) tag="<video src=\"$url\" controls autoplay playsinline></video>";;
+    mp3|wav|m4a|aac|flac|ogg) tag="<audio src=\"$url\" controls autoplay></audio>";;
+    png|jpg|jpeg|gif|webp|svg|heic|avif|bmp) tag="<img src=\"$url\">";;
+  esac
+  if [[ -n $tag ]]; then
+    mkdir -p ~/.cache/pv
+    cat > ~/.cache/pv/view.html <<HTML
+<!doctype html><meta charset=utf-8><title>${label}</title>
+<style>html,body{margin:0;height:100%;background:#11111b;color:#6c7086;font:12px -apple-system,system-ui}
+body{display:grid;grid-template-rows:1fr auto;place-items:center}
+video,img{max-width:100%;max-height:calc(100vh - 28px);object-fit:contain}audio{width:80%}
+p{margin:6px}</style>${tag}<p>${label}</p>
+HTML
+    url="file://$HOME/.cache/pv/view.html?t=$(date +%s)"
+  fi
+elif [[ $t == (localhost|127.0.0.1|0.0.0.0)* || $t == :[0-9]* ]]; then url="http://${t#:}"; [[ $t == :* ]] && url="http://localhost$t"
+elif [[ $t == *.* ]]; then url="https://$t"
+else echo "pv: không thấy file hoặc url: $t"; exit 1; fi
+
+close_prev
+name="PV $(date +%s%N)"
+python3 - "$DP" "$name" "$url" <<'PY'
+import json,sys
+p={"Name":sys.argv[2],"Guid":"pv-pane-0001","Custom Command":"Browser","Initial URL":sys.argv[3],
+   "Background Color":{"Red Component":0.118,"Green Component":0.118,"Blue Component":0.18,"Color Space":"sRGB"}}
+json.dump({"Profiles":[p]},open(sys.argv[1],"w"))
+PY
+# chờ iTerm2 nạp lại profile
+for i in {1..30}; do $IT2 profile list 2>/dev/null | grep -qF "$name" && break; sleep 0.1; done
+
+before=$($IT2 session list 2>/dev/null | cut -f1)
+$IT2 session split --vertical --session "$ORIG" --profile "$name" >/dev/null 2>&1
+for i in {1..20}; do
+  new=$($IT2 session list 2>/dev/null | cut -f1 | grep -vxF -f <(print -l $before) | head -1)
+  [[ -n $new ]] && break; sleep 0.1
+done
+[[ -n $new ]] && { print -r -- $new > $STATE; $IT2 session set-name "◧ $label" --session "$new" >/dev/null 2>&1; }
+$IT2 session focus "$ORIG" >/dev/null 2>&1
+echo "▸ $url"
