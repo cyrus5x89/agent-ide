@@ -67,16 +67,16 @@ Gõ thêm gì sau tên lệnh thì được chuyển thẳng cho agent, ví dụ
 
 ## Màu theo effort + ngọc rồng (iTerm2)
 
-`ide-tint <effort>` đổi màu khung iTerm2 đang đứng theo mức effort của Claude Code và in dãy ngọc rồng cho status line. Nền vẫn đen; con trỏ, tab, vùng chọn, link và các màu vàng/xanh/tím/lục lam trong code đổi theo cấp, đỏ/xanh lá giữ nguyên để diff vẫn đọc được.
+`ide-tint <effort>` đổi màu khung iTerm2 đang đứng theo mức effort của Claude Code và in icon ngọc rồng (❶ 1 sao … ❼ 7 sao) làm icon model trên status line. Nền vẫn đen; con trỏ, tab, vùng chọn, link và các màu vàng/xanh/tím/lục lam trong code đổi theo cấp, đỏ/xanh lá giữ nguyên để diff vẫn đọc được.
 
 | Effort | Ngọc | Màu nhấn |
 |---|---|---|
-| low | ●○○○○○○ | vàng `#F2C230` |
-| medium | ●●○○○○○ | vàng sẫm `#C98A0B` |
-| high | ●●●○○○○ | vàng sáng `#FFD84D` |
-| xhigh | ●●●●○○○ | đỏ `#E0384F` |
-| max | ●●●●●○○ | xanh `#2FA8F0` |
-| ultracode | ●●●●●●● | bạc `#D8DEE9` (prompt gần nhất có chữ "ultracode") |
+| low | ❶ | vàng `#F2C230` |
+| medium | ❷ | vàng sẫm `#C98A0B` |
+| high | ❸ | vàng sáng `#FFD84D` |
+| xhigh | ❹ | đỏ `#E0384F` |
+| max | ❺ | xanh `#2FA8F0` |
+| ultracode | ❼ | bạc `#D8DEE9` (prompt gần nhất có chữ "ultracode") |
 
 Gọi từ script status line, truyền effort lấy từ JSON của status line (`effort.level`) và đường dẫn transcript:
 

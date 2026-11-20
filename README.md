@@ -67,16 +67,16 @@ Anything after the preset is passed to the agent, e.g. `ide ccy --model opus` or
 
 ## Effort colours + dragon balls (iTerm2)
 
-`ide-tint <effort>` retints the current iTerm2 pane for the Claude Code effort level and prints a dragon-ball meter for your status line. The background stays black; cursor, tab, selection, links and the yellow/blue/magenta/cyan code colours follow the level, red/green stay put so diffs still read.
+`ide-tint <effort>` retints the current iTerm2 pane for the Claude Code effort level and prints a dragon-ball icon (❶ one-star … ❼ seven-star) to use as the model icon in your status line. The background stays black; cursor, tab, selection, links and the yellow/blue/magenta/cyan code colours follow the level, red/green stay put so diffs still read.
 
-| Effort | Balls | Accent |
+| Effort | Ball | Accent |
 |---|---|---|
-| low | ●○○○○○○ | gold `#F2C230` |
-| medium | ●●○○○○○ | deep gold `#C98A0B` |
-| high | ●●●○○○○ | bright gold `#FFD84D` |
-| xhigh | ●●●●○○○ | crimson `#E0384F` |
-| max | ●●●●●○○ | blue `#2FA8F0` |
-| ultracode | ●●●●●●● | silver `#D8DEE9` (your last prompt contains "ultracode") |
+| low | ❶ | gold `#F2C230` |
+| medium | ❷ | deep gold `#C98A0B` |
+| high | ❸ | bright gold `#FFD84D` |
+| xhigh | ❹ | crimson `#E0384F` |
+| max | ❺ | blue `#2FA8F0` |
+| ultracode | ❼ | silver `#D8DEE9` (your last prompt contains "ultracode") |
 
 Call it from your status line script with the effort from the status line JSON (`effort.level`) and the transcript path:
 

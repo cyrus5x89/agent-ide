@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ide-tint <effort> [--transcript PATH] : đổi màu nhấn của khung iTerm2 theo mức effort, in ra dãy ngọc rồng cho status line
+# ide-tint <effort> [--transcript PATH] : đổi màu nhấn của khung iTerm2 theo mức effort, in ra icon ngọc rồng 1-7 sao (❶-❼) cho status line
 #   effort: low | medium | high | xhigh | max (prompt có chữ "ultracode" → ultracode)
 #   Đổi: con trỏ, tab, vùng chọn, link, màu vàng/xanh/tím/lục lam (từ khoá, chuỗi trong code). Giữ nền đen, giữ đỏ/xanh lá cho diff.
 #   Chạy nhanh (chỉ stdlib); khi mức effort đổi mới gọi iTerm2 API ở tiến trình nền.
@@ -50,10 +50,9 @@ def ultracode(transcript):
 
 
 def balls(level):
-    n, accent = LEVELS[level]
-    on = "".join(f"\033[38;2;{';'.join(map(str, rgb(BALL)))}m●" for _ in range(n))
-    off = "\033[2m" + "○" * (7 - n) if n < 7 else ""
-    return f"{on}{off}\033[0m"
+    # ngọc rồng n sao: chữ số trong hình tròn đặc, tô cam
+    n, _ = LEVELS[level]
+    return f"\033[1;38;2;{';'.join(map(str, rgb(BALL)))}m{'❶❷❸❹❺❻❼'[n - 1]}\033[0m"
 
 
 def apply(level, sid):
