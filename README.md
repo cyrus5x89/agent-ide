@@ -65,6 +65,14 @@ Anything after the preset is passed to the agent, e.g. `ide ccy --model opus` or
 
 **Which permission mode?** Start with `ccp` (plan) to read an unfamiliar repo, `cca` or `cce` for everyday work, and `ccy` / `cxy` / `agyy` only where nothing can hurt you: a fresh worktree (`ccw`), a container, or a repo you can `git reset`. Those three skip every confirmation, including deletes and pushes.
 
+## Effort mascots
+
+Claude Code's mascot powering up per effort level (`art/saiyan/`, SVG + PNG, 18x18 grid, shared baseline):
+
+![low, medium, high, xhigh, max, ultracode](art/saiyan/sheet.png)
+
+Regenerate: `art/saiyan/gen.sh [level...]` (needs the `studio image` CLI), then `uv run --python 3.12 --with vtracer --with pillow python art/saiyan/vectorize.py`.
+
 ## Customise
 
 Edit the `AGENTS` table at the top of `bin/ide`: `name: (command, tab colour, English note, Vietnamese note)`. `PV_WIDTH=0.5 ide` changes the preview width (default 0.4).

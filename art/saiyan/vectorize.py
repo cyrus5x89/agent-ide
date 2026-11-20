@@ -6,6 +6,9 @@ from PIL import Image, ImageDraw
 
 HERE = pathlib.Path(__file__).parent
 LEVELS = ["low", "medium", "high", "xhigh", "max", "ultracode"]
+# lưới 18x18 ô, mỗi ô 32px: cao bao nhiêu ô (tính cả tóc + hào quang), chân đứng ở hàng 17
+CELL, GRID = 32, 18
+HEIGHT = {"low": 10, "medium": 10, "high": 10, "xhigh": 13, "max": 13, "ultracode": 13}
 
 for lv in LEVELS:
     raw = HERE / f"raw-{lv}.png"
@@ -19,12 +22,14 @@ for lv in LEVELS:
         ImageDraw.floodfill(mask, xy, (255, 0, 255), thresh=40)
     rgba = im.convert("RGBA")
     rgba.putdata([(0, 0, 0, 0) if m == (255, 0, 255) else p for p, m in zip(rgba.getdata(), mask.getdata())])
-    # cho các cấp to đều nhau: cắt sát hình, phóng vừa khung 472, đứng chung đường đáy
+    # cắt sát hình rồi phóng cho đúng số ô chiều cao, căn giữa ngang, chung đường đáy
     fig = rgba.crop(rgba.getbbox())
-    k = 472 / max(fig.size)
-    fig = fig.resize((round(fig.width * k), round(fig.height * k)), Image.LANCZOS)
-    rgba = Image.new("RGBA", (512, 512))
-    rgba.paste(fig, ((512 - fig.width) // 2, 492 - fig.height), fig)
+    k = HEIGHT[lv] * CELL / fig.height
+    fig = fig.resize((round(fig.width * k), HEIGHT[lv] * CELL), Image.LANCZOS)
+    size = GRID * CELL
+    assert fig.width <= (GRID - 1) * CELL, f"{lv} rộng {fig.width / CELL:.1f} ô, vượt lưới"
+    rgba = Image.new("RGBA", (size, size))
+    rgba.paste(fig, ((size - fig.width) // 2, (GRID - 1) * CELL - fig.height), fig)
     tmp = HERE / f".{lv}.png"
     rgba.save(tmp)
     vtracer.convert_image_to_svg_py(str(tmp), str(HERE / f"{lv}.svg"), colormode="color", hierarchical="stacked",
@@ -40,5 +45,11 @@ cells = "".join(f'<image x="{i * 270 + 7}" y="10" width="256" height="256" href=
 (HERE / "sheet.svg").write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{len(done) * 270}" height="310">'
                                 f'<rect width="100%" height="100%" fill="#0E0E0E"/>{cells}</svg>')
 subprocess.run(["rsvg-convert", HERE / "sheet.svg", "-o", HERE / "sheet.png"], check=True)
+step = 256 / GRID
+lines = "".join(f'<path d="M{i * 270 + 7 + j * step:.1f} 10v256M{i * 270 + 7} {10 + j * step:.1f}h256"/>'
+                for i in range(len(done)) for j in range(GRID + 1))
+(HERE / "sheet-grid.svg").write_text((HERE / "sheet.svg").read_text().replace(
+    "</svg>", f'<g stroke="#D97757" stroke-opacity=".35" stroke-width=".6" fill="none">{lines}</g></svg>'))
+subprocess.run(["rsvg-convert", HERE / "sheet-grid.svg", "-o", HERE / "sheet-grid.png"], check=True)
 assert all((HERE / f"{lv}.png").stat().st_size > 1000 for lv in done)
 print("ok", done)

@@ -65,6 +65,14 @@ Gõ thêm gì sau tên lệnh thì được chuyển thẳng cho agent, ví dụ
 
 **Chọn chế độ quyền nào?** Repo lạ thì mở `ccp` (chỉ lên kế hoạch) để đọc trước. Làm việc hằng ngày thì `cca` hoặc `cce`. `ccy` / `cxy` / `agyy` chỉ dùng ở chỗ hỏng cũng không sao: worktree mới (`ccw`), container, hoặc repo `git reset` lại được. Ba lệnh này bỏ qua mọi bước xác nhận, kể cả xoá file và push.
 
+## Mascot theo mức effort
+
+Mascot Claude Code biến hình theo từng mức effort (`art/saiyan/`, SVG + PNG, đo trên lưới 18x18, chung đường đáy):
+
+![low, medium, high, xhigh, max, ultracode](art/saiyan/sheet.png)
+
+Tạo lại: `art/saiyan/gen.sh [cấp...]` (cần lệnh `studio image`), rồi `uv run --python 3.12 --with vtracer --with pillow python art/saiyan/vectorize.py`.
+
 ## Tuỳ chỉnh
 
 Sửa bảng `AGENTS` đầu file `bin/ide`: `tên: (lệnh, màu tab, ghi chú tiếng Anh, ghi chú tiếng Việt)`. `PV_WIDTH=0.5 ide` đổi độ rộng khung preview (mặc định 0.4).
