@@ -11,13 +11,20 @@ for lv in LEVELS:
     raw = HERE / f"raw-{lv}.png"
     if not raw.exists():
         continue
-    im = Image.open(raw).convert("RGB").resize((512, 512), Image.LANCZOS)
+    im = Image.open(raw).convert("RGB")
+    w, h = im.size
     # xoá nền bằng flood fill từ 4 góc, để viền đen của nhân vật không bị xoá theo
     mask = im.copy()
-    for xy in [(0, 0), (511, 0), (0, 511), (511, 511)]:
+    for xy in [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)]:
         ImageDraw.floodfill(mask, xy, (255, 0, 255), thresh=40)
     rgba = im.convert("RGBA")
     rgba.putdata([(0, 0, 0, 0) if m == (255, 0, 255) else p for p, m in zip(rgba.getdata(), mask.getdata())])
+    # cho các cấp to đều nhau: cắt sát hình, phóng vừa khung 472, đứng chung đường đáy
+    fig = rgba.crop(rgba.getbbox())
+    k = 472 / max(fig.size)
+    fig = fig.resize((round(fig.width * k), round(fig.height * k)), Image.LANCZOS)
+    rgba = Image.new("RGBA", (512, 512))
+    rgba.paste(fig, ((512 - fig.width) // 2, 492 - fig.height), fig)
     tmp = HERE / f".{lv}.png"
     rgba.save(tmp)
     vtracer.convert_image_to_svg_py(str(tmp), str(HERE / f"{lv}.svg"), colormode="color", hierarchical="stacked",
