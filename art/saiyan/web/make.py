@@ -1,65 +1,118 @@
-# prompts.html: prompt + ảnh mẫu để tạo tay trên chatgpt.com/images (Claude, Codex/GPT, agy)
-# python3 make.py
+# prompts.html: brief + prompt + ảnh mẫu để tạo ảnh trên chatgpt.com/images (Claude, Codex/GPT, agy)
+# Cùng file này publish làm Artifact (ảnh .png đi kèm ở cùng thư mục). python3 make.py
 import html, pathlib
 
 HERE = pathlib.Path(__file__).parent
 STYLE = ("2D anime power-up illustration, thick clean black outlines, flat cel shading with 2-3 tones, no gradients on the body, "
-         "centred, full body, facing the viewer, fierce determined look. Plain flat solid #0E0E0E background, nothing else, "
-         "no text, no human, no existing anime character. Square 1:1 with margin around the figure.")
-HAIR = ("The hair is a big anime power-up hairdo covering the WHOLE top of the head edge to edge - 6 to 8 thick sharp spikes "
-        "fanning upward and outward, darker shade side and lighter highlight side; never a small tuft or a crown.")
+         "centred, full body, facing the viewer. Plain flat solid #0E0E0E background, nothing else, no text, no human, "
+         "no existing anime character. Square 1:1 with margin around the figure.")
+HAIR = ("The hair is a big anime power-up hairdo covering the WHOLE top of the head edge to edge - thick sharp spikes, "
+        "darker shade side and lighter highlight side; never a small tuft or a crown.")
 KEEP = ("Keep the creature's body EXACTLY as in the attached image: same body, muscles, arms, legs, eyes, black outline, size "
         "and position. Change ONLY the hair and the effects described here. Keep the plain flat #0E0E0E background and the same style.")
 LEVEL = {
-    "low": "FAT and simply ROUND body, one even colour, no belly patch. Short spiky GOLDEN-YELLOW hair. A calm thin golden outline glow. No lightning.",
-    "medium": "Hair: sharper spiky hair in a DEEP DARK GOLD. Effects: only a thin golden outline glow and 2-3 tiny blue-white electric sparks near the hair. No flames.",
-    "high": "Hair: very LONG golden-yellow spiky mane flowing down behind the body almost to the ground, no eyebrows. Effects: only a thin golden outline glow and 4-5 small yellow electric sparks. Restrained.",
-    "xhigh": "Hair: SHORT spiky CRIMSON RED hair. Effects: a soft red-orange divine flame aura and a few red embers floating.",
-    "max": "Hair: SHORT upright spiky bright CYAN-BLUE hair. Effects: a sharp blue flame aura with a white core and glowing blue sparkles.",
-    "ultracode": "Hair: SHORT spiky SILVER-WHITE hair; eyes glow silver-white. Effects: a tall silvery-white and pale blue flame aura with floating light particles, calm and god-like, the most radiant of all.",
+    "low": "Short spiky GOLDEN-YELLOW hair. A calm thin golden outline glow. No lightning.",
+    "medium": "Sharper spiky hair in a DEEP DARK GOLD. Only a thin golden outline glow and 2-3 tiny blue-white electric sparks near the hair. No flames.",
+    "high": "Very LONG golden-yellow spiky mane flowing down behind the body almost to the ground, no eyebrows. Only a thin golden outline glow and 4-5 small yellow electric sparks. Restrained.",
+    "xhigh": "SHORT spiky CRIMSON RED hair. A soft red-orange divine flame aura and a few red embers floating.",
+    "max": "SHORT upright spiky bright CYAN-BLUE hair. A sharp blue flame aura with a white core and glowing blue sparkles.",
+    "ultracode": "SHORT spiky SILVER-WHITE hair, eyes glow silver-white. A tall silvery-white and pale blue flame aura with floating light particles, calm and god-like, the most radiant of all.",
 }
+BODY = {"low": "Make the body FAT and round, one even colour.", "medium": "Make the body lean and toned with subtle muscles."}
+MUSCLE = "Make the body HEAVILY MUSCULAR - big pecs, six-pack, bulging arms."
+# nhân vật: (mô tả, tính cách/dáng theo tinh thần nhân vật gợi ý, gợi ý ghi cho người đọc)
 CHAR = {
-    "Codex (GPT)": ("a small charcoal-black rounded cube creature whose face is a glowing white terminal prompt '>_' (the '>' and '_' are its eyes "
-                    "and mouth), tiny stubby arms sticking out left and right, four tiny square legs, a thin teal (#10A37F) rim light"),
-    "agy (Antigravity)": ("a small Google-blue (#4285F4) sphere creature that floats a little above the ground (anti-gravity), two white oval eyes, "
-                          "a thin orbiting ring around its middle, tiny stubby arms, no legs, a soft shadow below it"),
+    "codex": ("Codex (GPT)", "kiểu Cađíc: kiêu hãnh, khoanh tay, tóc dựng thẳng có mỏm chữ V trước trán",
+              "a small puffy cloud-shaped creature built from the Codex app icon in Image 1: a scalloped cloud body with a soft "
+              "lavender-to-royal-blue gradient (#A9A4FF to #3B4CF5), its face is the icon's white terminal prompt '>_' "
+              "(the '>' is a narrowed eye, the '_' a flat mouth), tiny stubby arms, two tiny feet",
+              "Personality: the proud elite rival. Arms crossed, chin up, smug confident smirk. Hair always rises straight up like "
+              "one tall flame with a sharp V-shaped widow's peak at the forehead."),
+    "agy": ("agy (Antigravity)", "kiểu Broly: khổng lồ, cơ bắp cuồn cuộn, tóc dài hoang dã, hào quang ánh xanh lá",
+            "a creature built from the Antigravity app icon in Image 1: a tall rounded arch shape like a smooth letter A without "
+            "the crossbar, the arch's two ends are its legs, the rounded top is its head with two small white eyes, the body keeps "
+            "the icon's gradient (green and yellow-red on top flowing into Google blue #4285F4 down the legs), tiny stubby arms",
+            "Personality: the legendary berserker. Hulking and towering, wild untamed spiky hair that sweeps back and outward, "
+            "a gold ring around its neck and gold armbands, a faint lime-green tint at the edge of every aura, roaring with power."),
 }
 
 cards = []
 
 
 def card(title, refs, text):
-    imgs = "".join(f'<img src="{r}" title="{r}">' if r.endswith(".png") else f'<span>{r}</span>' for r in refs)
-    cards.append(f'<section><h3>{html.escape(title)}</h3><div class=refs>{imgs or "<i>không cần ảnh</i>"}</div>'
-                 f'<pre>{html.escape(text)}</pre><button onclick="navigator.clipboard.writeText(this.previousSibling.innerText);'
-                 f'this.textContent=\'đã copy\'">copy prompt</button></section>')
+    imgs = "".join(f'<a href="{r}" target="_blank"><img src="{r}" alt="{r}"><span>{r}</span></a>' if r.endswith(".png")
+                   else f'<em>{r}</em>' for r in refs)
+    cards.append(f'<article><h3>{html.escape(title)}</h3><div class="refs">{imgs}</div>'
+                 f'<pre>{html.escape(text)}</pre><button type="button" class="copy">Copy prompt</button></article>')
 
 
-# Claude: 4 cấp còn thiếu, sửa trên ảnh thân có sẵn
-cards.append("<h2>1. Claude - sửa trên ảnh (đính kèm đúng ảnh trong ô)</h2>")
+cards.append('<h2 id="claude">Claude · 4 cấp còn thiếu <small>sửa trên ảnh thân có sẵn</small></h2>')
 for lv, ref in [("medium", "3-than-gay.png"), ("high", "2-than-max.png"), ("xhigh", "2-than-max.png"), ("ultracode", "2-than-max.png")]:
-    card(f"Claude · {lv}", [ref], f"{KEEP} {LEVEL[lv]}")
+    card(f"claude-{lv}", [ref], f"{KEEP} Hair and effects: {LEVEL[lv]}")
 
-for i, (name, desc) in enumerate(CHAR.items(), 2):
-    cards.append(f"<h2>{i}. {name} - tạo nhân vật trước, rồi 6 cấp</h2>")
-    card(f"{name} · nhân vật gốc", ["4-mau-low.png"],
-         f"Design an original mascot: {desc}. No hair yet, standing calmly. Match the drawing style of the attached image "
-         f"(outline weight, cel shading, background) but NOT its character. {STYLE}")
+for key, (name, vibe, desc, trait) in CHAR.items():
+    cards.append(f'<h2 id="{key}">{name} <small>{vibe}</small></h2>')
+    icon = {"codex": "6-icon-codex.png", "agy": "7-icon-agy.png"}[key]
+    card(f"{key}-base", [icon, "4-mau-low.png"],
+         f"Image 1 is an app icon, Image 2 is a style reference. Design a mascot: {desc}. No hair yet, standing calmly. "
+         f"{trait.split('.')[0]}. Match the drawing style of Image 2 (outline weight, cel shading, background) but NOT its "
+         f"character. {STYLE}")
     for lv in LEVEL:
-        body = {"low": "Make the body FAT and round.", "medium": "Make the body lean and toned with subtle muscles.",
-                }.get(lv, "Make the body HEAVILY MUSCULAR - big pecs, six-pack, bulging arms.")
-        card(f"{name} · {lv}", ["(ảnh nhân vật gốc vừa tạo)", "5-mau-max.png" if lv != "low" else "4-mau-low.png"],
+        card(f"{key}-{lv}", [f"({key}-base vừa tạo)", "4-mau-low.png" if lv == "low" else "5-mau-max.png"],
              f"Image 1 is the mascot, Image 2 is a style reference for the power-up look only. Draw the mascot from Image 1 "
-             f"powering up, same face and colours. {body} {HAIR} {LEVEL[lv]} {STYLE}")
+             f"powering up, same face and colours. {BODY.get(lv, MUSCLE)} {trait} {HAIR} {LEVEL[lv]} {STYLE}")
 
-(HERE / "prompts.html").write_text(f"""<!doctype html><meta charset=utf-8><title>Prompt ngọc rồng</title><style>
-body{{background:#0E0E0E;color:#E8E6E3;font:13px -apple-system,system-ui;max-width:900px;margin:0 auto;padding:16px}}
-h1{{font-size:26px}}h2{{color:#E08A6D;font-size:20px;margin:28px 0 8px}}h3{{margin:0 0 6px;font-size:16px}}
-section{{background:#1A1918;border-radius:8px;padding:12px;margin:10px 0}}
-.refs{{display:flex;gap:8px;margin-bottom:8px;color:#B5AFA8}}.refs img{{height:90px;border-radius:4px;background:#000}}
-pre{{white-space:pre-wrap;background:#0E0E0E;padding:10px;border-radius:6px;margin:0 0 8px}}
-button{{background:#D97757;color:#0E0E0E;border:0;border-radius:6px;padding:6px 12px;font-weight:600;cursor:pointer}}
-</style><h1>Prompt + ảnh mẫu cho chatgpt.com/images</h1>
-<p>Kéo ảnh trong thư mục này vào ô chat, dán prompt. Tên ảnh ghi trong từng ô. Tạo xong lưu về <code>art/saiyan/web/out/</code> đặt tên kiểu <code>claude-medium.png</code>, <code>codex-max.png</code>.</p>
-{''.join(cards)}""")
-print("ok", len(cards))
+BRIEF = ("You are making a set of square anime power-up illustrations of three small mascots (Claude, Codex, agy), one image "
+         "per card below. For each card: attach the listed reference images, use the prompt exactly, generate one image, and "
+         "name it with the card title (for example claude-medium.png). Make the -base card of a mascot before its six levels "
+         "and use that result as Image 1. Keep every image on a plain flat #0E0E0E background with no text.")
+
+page = f"""<title>Ngọc Rồng Mascot Prompts</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap">
+<style>
+/* một cột đọc dọc: brief → mục lục → thẻ prompt theo nhân vật; tối hẳn theo theme Claude IDE Dragonball */
+:root {{ --bg:#0E0E0E; --card:#191716; --ink:#E8E6E3; --muted:#B5AFA8; --accent:#E08A6D; --ball:#F5A623; --line:#2C2826;
+  --display:"Bricolage Grotesque", "Avenir Next", sans-serif; --body:"IBM Plex Sans", -apple-system, system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace; color-scheme:dark }}
+body {{ background:var(--bg); color:var(--ink); font:15px/1.55 var(--body); margin:0;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:24px 64px }}
+main {{ max-width:880px; margin:0 auto; display:grid; gap:14px }}
+h1 {{ font:700 clamp(30px, 6vw, 44px)/1.05 var(--display); margin:0; text-wrap:balance }}
+h1 b {{ color:var(--ball) }}
+h2 {{ font:700 24px/1.2 var(--display); color:var(--accent); margin:28px 0 0; text-wrap:balance }}
+h2 small {{ display:block; font:400 14px var(--body); color:var(--muted) }}
+h3 {{ font:600 16px var(--mono); margin:0 }}
+p {{ margin:0; max-width:65ch }}
+.brief {{ border:1px solid var(--line); border-radius:10px; padding:14px; display:grid; gap:8px }}
+.brief h2 {{ margin:0; font-size:18px }}
+nav {{ display:flex; flex-wrap:wrap; gap:8px }}
+nav a, .copy {{ background:var(--accent); color:#120C0A; border:0; border-radius:999px; padding:6px 14px; font:600 14px var(--body);
+  text-decoration:none; cursor:pointer }}
+nav a:focus-visible, .copy:focus-visible, .refs a:focus-visible {{ outline:2px solid var(--ball); outline-offset:2px }}
+article {{ background:var(--card); border-radius:10px; padding:14px; display:grid; gap:10px; min-width:0 }}
+.refs {{ display:flex; flex-wrap:wrap; gap:10px; color:var(--muted); font:13px var(--mono) }}
+.refs a {{ display:grid; gap:4px; color:var(--muted); text-decoration:none; justify-items:start }}
+.refs img {{ height:96px; max-width:100%; border-radius:6px; background:#000 }}
+.refs em {{ align-self:center; font-style:normal; border:1px dashed var(--line); border-radius:6px; padding:8px }}
+pre {{ white-space:pre-wrap; overflow-wrap:anywhere; background:var(--bg); border-radius:8px; padding:12px; margin:0; font:13px/1.5 var(--mono) }}
+.copy {{ justify-self:start }}
+@media (prefers-reduced-motion: no-preference) {{ .copy {{ transition:filter .15s }} .copy:hover {{ filter:brightness(1.1) }} }}
+</style>
+<main>
+<h1>Ngọc Rồng <b>❶–❼</b> mascot prompts</h1>
+<p>Bộ prompt và ảnh mẫu để tạo các con mascot biến hình theo mức effort cho Claude, Codex và agy. Bấm ảnh để mở cỡ lớn, kéo thả vào ô chat, rồi dán prompt.</p>
+<section class="brief"><h2>Brief for the image model</h2><p>{BRIEF}</p><button type="button" class="copy">Copy brief</button></section>
+<nav><a href="#claude">Claude</a><a href="#codex">Codex (GPT)</a><a href="#agy">agy</a></nav>
+{''.join(cards)}
+</main>
+<script>
+for (const b of document.querySelectorAll('.copy')) b.addEventListener('click', async () => {{
+  const src = b.previousElementSibling.tagName === 'PRE' ? b.previousElementSibling : b.parentElement.querySelector('p');
+  try {{ await navigator.clipboard.writeText(src.innerText); b.textContent = 'Copied'; }}
+  catch {{ getSelection().selectAllChildren(src); b.textContent = 'Selected, press ⌘C'; }}
+}});
+</script>"""
+(HERE / "prompts.html").write_text(page)
+print("ok", sum(c.startswith("<article") for c in cards), "cards")
