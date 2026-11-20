@@ -54,9 +54,9 @@ for i, (name, desc) in enumerate(CHAR.items(), 2):
 
 (HERE / "prompts.html").write_text(f"""<!doctype html><meta charset=utf-8><title>Prompt ngọc rồng</title><style>
 body{{background:#0E0E0E;color:#E8E6E3;font:13px -apple-system,system-ui;max-width:900px;margin:0 auto;padding:16px}}
-h2{{color:#D97757;font-size:16px;margin:28px 0 8px}}h3{{margin:0 0 6px;font-size:13px}}
+h1{{font-size:26px}}h2{{color:#E08A6D;font-size:20px;margin:28px 0 8px}}h3{{margin:0 0 6px;font-size:16px}}
 section{{background:#1A1918;border-radius:8px;padding:12px;margin:10px 0}}
-.refs{{display:flex;gap:8px;margin-bottom:8px;color:#8A847D}}.refs img{{height:90px;border-radius:4px;background:#000}}
+.refs{{display:flex;gap:8px;margin-bottom:8px;color:#B5AFA8}}.refs img{{height:90px;border-radius:4px;background:#000}}
 pre{{white-space:pre-wrap;background:#0E0E0E;padding:10px;border-radius:6px;margin:0 0 8px}}
 button{{background:#D97757;color:#0E0E0E;border:0;border-radius:6px;padding:6px 12px;font-weight:600;cursor:pointer}}
 </style><h1>Prompt + ảnh mẫu cho chatgpt.com/images</h1>
