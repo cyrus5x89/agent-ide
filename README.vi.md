@@ -84,7 +84,10 @@ Gọi từ script status line, truyền effort lấy từ JSON của status line
 out = subprocess.run(["ide-tint", effort, "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
 ```
 
-Nó chỉ gọi iTerm2 khi mức effort đổi. Profile còn có hình mờ Claude + ngọc rồng ở góc dưới phải (`art/dragonball/watermark.png`, vẽ bằng `make.py`).
+Nó chỉ gọi iTerm2 khi mức effort đổi.
+
+- **agy**: gọi `ide-tint <effort>` y như vậy trong `~/.gemini/antigravity-cli/statusline.py` (agy có sẵn `model.effort`) rồi dùng kết quả làm icon model.
+- **Codex**: status line chỉ nhận mục có sẵn nên không gắn được icon, nhưng khung vẫn đổi màu. Thêm `ide-tint --hook` làm hook `SessionStart` và `UserPromptSubmit` trong `~/.codex/hooks.json`; nó đọc effort của lượt gần nhất trong rollout (không có thì lấy `model_reasoning_effort` trong `config.toml`) và không in gì. Profile còn có hình mờ Claude + ngọc rồng ở góc dưới phải (`art/dragonball/watermark.png`, vẽ bằng `make.py`).
 
 ![Claude và 7 viên ngọc rồng](art/dragonball/hero.png)
 

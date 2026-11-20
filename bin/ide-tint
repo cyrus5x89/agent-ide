@@ -3,7 +3,8 @@
 #   effort: low | medium | high | xhigh | max (prompt có chữ "ultracode" → ultracode)
 #   Đổi: con trỏ, tab, vùng chọn, link, màu vàng/xanh/tím/lục lam (từ khoá, chuỗi trong code). Giữ nền đen, giữ đỏ/xanh lá cho diff.
 #   Chạy nhanh (chỉ stdlib); khi mức effort đổi mới gọi iTerm2 API ở tiến trình nền.
-import json, os, subprocess, sys
+# ide-tint --hook : dùng làm hook SessionStart / UserPromptSubmit của Codex (đọc JSON hook ở stdin, không in gì)
+import json, os, re, subprocess, sys
 
 # mức → (số ngọc, màu nhấn)
 LEVELS = {
@@ -49,6 +50,25 @@ def ultracode(transcript):
     return False
 
 
+def codex_effort(transcript):
+    # effort của lượt gần nhất trong rollout Codex, không có thì lấy model_reasoning_effort trong config.toml
+    text = ""
+    try:
+        with open(transcript, "rb") as fh:
+            fh.seek(max(0, os.path.getsize(transcript) - 262144))
+            text = fh.read().decode("utf-8", "ignore")
+    except (OSError, TypeError):
+        pass
+    found = re.findall(r'"(?:reasoning_)?effort"\s*:\s*"([a-z]+)"', text)
+    if not found:
+        try:
+            found = re.findall(r'^model_reasoning_effort\s*=\s*"([a-z]+)"', open(os.path.expanduser("~/.codex/config.toml")).read(), re.M)
+        except OSError:
+            pass
+    eff = found[-1] if found else ""
+    return {"minimal": "low", "none": "low"}.get(eff, eff)
+
+
 def balls(level):
     # ngọc rồng n sao: chữ số trong hình tròn đặc, tô cam
     n, _ = LEVELS[level]
@@ -83,12 +103,20 @@ if __name__ == "__main__":
         apply(sys.argv[2], sys.argv[3])
         sys.exit(0)
     args = sys.argv[1:]
-    level = (args[0] if args else "").lower()
-    if "--transcript" in args and ultracode(args[args.index("--transcript") + 1]):
-        level = "ultracode"
+    hook = args[:1] == ["--hook"]
+    if hook:
+        try:
+            level = codex_effort(json.load(sys.stdin).get("transcript_path"))
+        except ValueError:
+            level = codex_effort(None)
+    else:
+        level = (args[0] if args else "").lower()
+        if "--transcript" in args and ultracode(args[args.index("--transcript") + 1]):
+            level = "ultracode"
     if level not in LEVELS:
         sys.exit(0)
-    print(balls(level), end="")
+    if not hook:
+        print(balls(level), end="")
     sid = os.environ.get("ITERM_SESSION_ID", "").split(":")[-1]
     if not sid:
         sys.exit(0)

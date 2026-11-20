@@ -84,7 +84,10 @@ Call it from your status line script with the effort from the status line JSON (
 out = subprocess.run(["ide-tint", effort, "--transcript", data["transcript_path"]], capture_output=True, text=True, timeout=1).stdout
 ```
 
-It only talks to iTerm2 when the level changes. The profile also carries a faint Claude + dragon balls watermark in the bottom-right corner (`art/dragonball/watermark.png`, drawn by `make.py`).
+It only talks to iTerm2 when the level changes.
+
+- **agy**: call `ide-tint <effort>` the same way from `~/.gemini/antigravity-cli/statusline.py` (agy passes `model.effort`) and use the output as the model icon.
+- **Codex**: its status line takes only built-in items, so there is no icon, but the pane still retints. Add `ide-tint --hook` as a `SessionStart` and `UserPromptSubmit` command hook in `~/.codex/hooks.json`; it reads the effort of the latest turn from the rollout (fallback `model_reasoning_effort` in `config.toml`) and prints nothing. The profile also carries a faint Claude + dragon balls watermark in the bottom-right corner (`art/dragonball/watermark.png`, drawn by `make.py`).
 
 ![Claude and the seven dragon balls](art/dragonball/hero.png)
 
