@@ -63,7 +63,7 @@ elif [[ -e $t ]]; then
     cat > ~/.cache/pv/view.html <<HTML
 <!doctype html><meta charset=utf-8><title>${label}</title>
 <style>${STYLE}
-body{display:grid;grid-template-rows:1fr auto;place-items:center}
+body{display:grid;grid-template:minmax(0,1fr) auto / minmax(0,1fr);place-items:center}
 video,img{max-width:100%;max-height:calc(100vh - 28px);object-fit:contain}audio{width:80%}
 p{margin:6px}</style>${tag}<p>${label}</p>
 HTML

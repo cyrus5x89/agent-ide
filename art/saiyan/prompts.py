@@ -6,12 +6,16 @@ BASE = ("The character is the mascot in Image 1: a small blocky orange (#D97757)
         "(angry eyebrows shapes above the square eyes). Plain flat solid #0E0E0E background, nothing else in the scene, "
         "no text, no human, no existing anime character. Square 1:1 composition with margin around the figure. HAIR RULE: the hair is a big anime power-up hairdo that covers the WHOLE top of the head from edge to edge - 6 to 8 thick sharp spikes fanning upward and outward, each with a darker shade side and a lighter highlight side; never a small tuft or a crown in the middle.")
 LEVELS = {
- "low": "Power level 1: the creature is FAT and round, a soft belly bulging out, chubby little arms. Short spiky golden-yellow "
-        "hair (spikes about half the body height). A calm thin golden flame aura hugging the body. No lightning.",
- "medium": "Power level 2: slimmer than a fat version but still soft, more upright and sharper spiky hair in a DEEPER darker gold, "
-           "a stronger golden flame aura with crackling small blue-white electric sparks around it.",
+ "low": "Power level 1: the creature is FAT and simply ROUND - one smooth round chubby body shape, NO belly patch, NO lighter belly "
+        "area, the whole body one even orange, chubby little arms. Short spiky golden-yellow "
+        "hair (spikes about half the body height). A calm thin golden outline glow hugging the body. No lightning.",
+ "medium": "Power level 2: slightly slimmer than level 1, sharper spiky hair in a DEEPER darker gold. MODEST effects only: a thin "
+           "golden outline glow hugging the body (no big flames), and just 2-3 tiny blue-white electric sparks near the hair. "
+           "Much less spectacular than higher levels.",
  "high": "Power level 3: the creature is MUSCULAR - big pecs, six-pack, bulging arms, flexing. Very LONG golden hair, a huge "
-         "spiky mane flowing down its back almost to the ground, no eyebrows. Intense golden aura with many electric arcs.",
+         "spiky mane flowing down its back almost to the ground, no eyebrows. RESTRAINED effects: a thin golden outline glow and "
+         "4-5 small electric sparks, no big flame aura, no lightning everywhere - the long hair is the star, the effects stay "
+         "weaker than the later red, blue and silver levels.",
  "xhigh": "Power level 4: MUSCULAR but lean and calm, SHORT spiky hair in CRIMSON RED, a soft red-orange flame aura like a "
           "divine fire, a few red embers floating. Serene confident expression.",
  "max": "Power level 5: MUSCULAR, SHORT upright spiky hair in bright CYAN-BLUE, a sharp blue flame aura with a white core, "
